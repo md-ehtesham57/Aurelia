@@ -42,12 +42,12 @@ const ProductManager = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-sm bg-surface border border-bg rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="text-xs sm:text-sm bg-surface border border-bg rounded px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50"
           >
             <option value="">All Status</option>
             <option value="draft">Draft</option>
@@ -57,13 +57,13 @@ const ProductManager = () => {
             <option value="archived">Archived</option>
           </select>
         </div>
-        <Button onClick={() => setFormModal({})}>
+        <Button size="sm" className="w-full sm:w-auto" onClick={() => setFormModal({})}>
           <Plus size={16} className="mr-1" /> Add Product
         </Button>
       </div>
 
       <div className="bg-surface rounded overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto hidden sm:block">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-bg text-left">
@@ -133,11 +133,48 @@ const ProductManager = () => {
                   </td>
                 </tr>
               ))}
-              {products.length === 0 && (
-                <tr><td colSpan={7} className="p-8 text-center text-text-muted">No products found</td></tr>
-              )}
             </tbody>
           </table>
+        </div>
+
+        <div className="sm:hidden space-y-3 p-4">
+          {products.length === 0 ? (
+            <p className="text-center text-text-muted py-8">No products found</p>
+          ) : (
+            products.map((product) => (
+              <div key={product._id} className="border border-bg/50 rounded p-4 space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-16 h-16 bg-bg rounded overflow-hidden shrink-0">
+                    <img src={product.images?.[0]?.url || '/placeholder.svg'} alt="" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{product.title}</p>
+                    <p className="text-xs text-text-muted">{product.sku}</p>
+                    <p className="text-xs text-text-muted">{product.category?.name || '—'} • {product.metal?.purity ? `${product.metal.purity} ${product.metal.type}` : '—'}</p>
+                    <p className="text-sm font-medium text-primary mt-1">₹{(product.basePriceOverride || 0).toLocaleString('en-IN')}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <select
+                    value={product.status}
+                    onChange={(e) => handleStatusChange(product._id, e.target.value)}
+                    className="text-xs bg-surface border border-bg rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="hidden">Hidden</option>
+                    <option value="out_of_stock">Out of Stock</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setViewProduct(product)} className="p-1.5 hover:bg-bg rounded" title="View"><Eye size={15} /></button>
+                    <button onClick={() => setFormModal(product)} className="p-1.5 hover:bg-bg rounded" title="Edit"><Edit3 size={15} /></button>
+                    <button onClick={() => setDeleteModal(product._id)} className="p-1.5 hover:bg-bg rounded text-error" title="Delete"><Trash2 size={15} /></button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

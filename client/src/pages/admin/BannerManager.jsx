@@ -26,19 +26,19 @@ const BannerManager = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-serif text-lg">Banners</h3>
-        <Button onClick={handleCreate}>Add Banner</Button>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <h3 className="font-serif text-base sm:text-lg">Banners</h3>
+        <Button size="sm" className="w-full sm:w-auto" onClick={handleCreate}>Add Banner</Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         {banners.map((banner) => (
-          <div key={banner._id} className="bg-surface rounded p-4">
+          <div key={banner._id} className="bg-surface rounded p-3 sm:p-4">
             <div className="aspect-[2/1] bg-bg rounded mb-3">
               <img src={banner.image} alt={banner.title} className="w-full h-full object-cover rounded" />
             </div>
             <div>
-              <h4 className="font-medium">{banner.title || 'Untitled'}</h4>
+              <h4 className="font-medium text-sm sm:text-base">{banner.title || 'Untitled'}</h4>
               <p className="text-xs text-text-muted capitalize">{banner.position.replace(/_/g, ' ')}</p>
             </div>
           </div>

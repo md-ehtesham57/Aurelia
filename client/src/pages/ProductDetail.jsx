@@ -58,12 +58,12 @@ const ProductDetail = () => {
             />
           </div>
           {images.length > 1 && (
-            <div className="flex gap-3">
+            <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin">
               {images.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedImage(i)}
-                  className={`w-20 h-20 bg-bg rounded overflow-hidden border-2 transition-colors ${
+                  className={`snap-start shrink-0 w-16 sm:w-20 h-16 sm:h-20 bg-bg rounded overflow-hidden border-2 transition-colors ${
                     i === selectedImage ? 'border-primary' : 'border-transparent'
                   }`}
                 >
@@ -99,7 +99,7 @@ const ProductDetail = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             {product.metal?.type && (
               <div><span className="text-text-muted">Metal:</span> <span className="capitalize">{product.metal.type}</span></div>
             )}
@@ -114,8 +114,8 @@ const ProductDetail = () => {
             )}
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center border border-bg rounded">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="flex items-center self-start border border-bg rounded w-fit">
               <button
                 onClick={() => setQty(Math.max(1, qty - 1))}
                 className="p-3 hover:bg-bg transition-colors"
@@ -134,7 +134,7 @@ const ProductDetail = () => {
               <ShoppingBag size={18} className="mr-2" />
               Add to Cart
             </Button>
-            <button className="p-3 border border-bg rounded hover:bg-bg transition-colors">
+            <button className="p-3 border border-bg rounded hover:bg-bg transition-colors self-start">
               <Heart size={20} className="text-text-muted" />
             </button>
           </div>
@@ -157,11 +157,11 @@ const ProductDetail = () => {
       </div>
 
       {product.reviews?.length > 0 && (
-        <section className="mt-16">
-          <h2 className="font-serif text-2xl mb-6">Customer Reviews</h2>
-          <div className="space-y-4">
+        <section className="mt-12 sm:mt-16">
+          <h2 className="font-serif text-xl sm:text-2xl mb-4 sm:mb-6">Customer Reviews</h2>
+          <div className="space-y-3 sm:space-y-4">
             {product.reviews.map((review) => (
-              <div key={review._id} className="bg-surface rounded p-4">
+              <div key={review._id} className="bg-surface rounded p-3 sm:p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="flex">
                     {Array.from({ length: 5 }, (_, i) => (
@@ -170,9 +170,9 @@ const ProductDetail = () => {
                       </span>
                     ))}
                   </div>
-                  <span className="text-sm font-medium">{review.user?.name}</span>
+                  <span className="text-xs sm:text-sm font-medium">{review.user?.name}</span>
                 </div>
-                {review.comment && <p className="text-sm text-text-muted">{review.comment}</p>}
+                {review.comment && <p className="text-xs sm:text-sm text-text-muted">{review.comment}</p>}
               </div>
             ))}
           </div>

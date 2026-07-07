@@ -118,7 +118,7 @@ const ProductForm = ({ product, onClose }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Title *" value={form.title} onChange={(e) => update('title', e.target.value)} required />
         <Input label="SKU *" value={form.sku} onChange={(e) => update('sku', e.target.value)} required />
       </div>
@@ -137,7 +137,7 @@ const ProductForm = ({ product, onClose }) => {
 
       <ImageUploader images={images} onChange={setImages} />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1">
           <label className="block text-sm font-medium text-text">Category</label>
           <select
@@ -156,7 +156,7 @@ const ProductForm = ({ product, onClose }) => {
 
       <div className="border-t border-bg pt-4">
         <h4 className="text-sm font-semibold mb-3">Metal & Pricing</h4>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-1">
             <label className="block text-sm font-medium text-text">Metal Type</label>
             <select value={form.metalType} onChange={(e) => update('metalType', e.target.value)} className="w-full px-4 py-2.5 bg-bg rounded focus:outline-none focus:ring-2 focus:ring-primary/50">
@@ -187,11 +187,11 @@ const ProductForm = ({ product, onClose }) => {
             </select>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4 mt-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
           <Input label="Weight (grams)" type="number" value={form.weightGrams} onChange={(e) => update('weightGrams', e.target.value)} />
           <Input label="Base Price Override (₹)" type="number" value={form.basePriceOverride} onChange={(e) => update('basePriceOverride', e.target.value)} />
         </div>
-        <div className="grid grid-cols-2 gap-4 mt-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
           <div className="space-y-1">
             <label className="block text-sm font-medium text-text">Making Charge Type</label>
             <select value={form.makingChargeType} onChange={(e) => update('makingChargeType', e.target.value)} className="w-full px-4 py-2.5 bg-bg rounded focus:outline-none focus:ring-2 focus:ring-primary/50">
@@ -205,7 +205,7 @@ const ProductForm = ({ product, onClose }) => {
 
       <div className="border-t border-bg pt-4">
         <h4 className="text-sm font-semibold mb-3">Classification</h4>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
             <label className="block text-sm font-medium text-text">Gender</label>
             <select value={form.gender} onChange={(e) => update('gender', e.target.value)} className="w-full px-4 py-2.5 bg-bg rounded focus:outline-none focus:ring-2 focus:ring-primary/50">

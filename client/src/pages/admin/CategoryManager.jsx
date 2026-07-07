@@ -43,37 +43,57 @@ const CategoryManager = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-serif text-lg">Categories</h3>
-        <Button onClick={() => setModal('create')}><Plus size={16} className="mr-1" /> Add Category</Button>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <h3 className="font-serif text-base sm:text-lg">Categories</h3>
+        <Button size="sm" className="w-full sm:w-auto" onClick={() => setModal('create')}><Plus size={16} className="mr-1" /> Add Category</Button>
       </div>
 
       <div className="bg-surface rounded overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-bg text-left">
-              <th className="p-4 font-medium text-text-muted">Name</th>
-              <th className="p-4 font-medium text-text-muted">Slug</th>
-              <th className="p-4 font-medium text-text-muted">Description</th>
-              <th className="p-4 font-medium text-text-muted">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map((cat) => (
-              <tr key={cat._id} className="border-b border-bg/50 hover:bg-bg/50 transition-colors">
-                <td className="p-4 font-medium">{cat.name}</td>
-                <td className="p-4 text-text-muted">{cat.slug}</td>
-                <td className="p-4 text-text-muted">{cat.description || '—'}</td>
-                <td className="p-4">
-                  <div className="flex items-center gap-2">
-                    <button className="p-1.5 hover:bg-bg rounded"><Edit3 size={15} /></button>
-                    <button onClick={() => handleDelete(cat._id)} className="p-1.5 hover:bg-bg rounded text-error"><Trash2 size={15} /></button>
-                  </div>
-                </td>
+        <div className="overflow-x-auto hidden sm:block">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-bg text-left">
+                <th className="p-4 font-medium text-text-muted">Name</th>
+                <th className="p-4 font-medium text-text-muted">Slug</th>
+                <th className="p-4 font-medium text-text-muted">Description</th>
+                <th className="p-4 font-medium text-text-muted">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {categories.map((cat) => (
+                <tr key={cat._id} className="border-b border-bg/50 hover:bg-bg/50 transition-colors">
+                  <td className="p-4 font-medium">{cat.name}</td>
+                  <td className="p-4 text-text-muted">{cat.slug}</td>
+                  <td className="p-4 text-text-muted">{cat.description || '—'}</td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <button className="p-1.5 hover:bg-bg rounded"><Edit3 size={15} /></button>
+                      <button onClick={() => handleDelete(cat._id)} className="p-1.5 hover:bg-bg rounded text-error"><Trash2 size={15} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="sm:hidden space-y-3 p-4">
+          {categories.length === 0 ? (
+            <p className="text-center text-text-muted py-8">No categories</p>
+          ) : (
+            categories.map((cat) => (
+              <div key={cat._id} className="border border-bg/50 rounded p-4 flex items-center justify-between">
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium truncate">{cat.name}</p>
+                  <p className="text-xs text-text-muted truncate">{cat.slug}{cat.description ? ` — ${cat.description}` : ''}</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 ml-3">
+                  <button className="p-1.5 hover:bg-bg rounded"><Edit3 size={15} /></button>
+                  <button onClick={() => handleDelete(cat._id)} className="p-1.5 hover:bg-bg rounded text-error"><Trash2 size={15} /></button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       <Modal isOpen={modal === 'create'} onClose={() => setModal(null)} title="Add Category">

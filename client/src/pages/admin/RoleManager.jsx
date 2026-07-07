@@ -46,29 +46,29 @@ const RoleManager = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="font-serif text-lg">Roles & Permissions</h3>
-        <Button onClick={() => setEditRole({ name: '', permissions: [] })}>Create Role</Button>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <h3 className="font-serif text-base sm:text-lg">Roles & Permissions</h3>
+        <Button size="sm" className="w-full sm:w-auto" onClick={() => setEditRole({ name: '', permissions: [] })}>Create Role</Button>
       </div>
 
       <div className="space-y-4">
         {roles.map((role) => (
-          <div key={role._id} className="bg-surface rounded p-6">
-            <div className="flex items-center justify-between mb-4">
+          <div key={role._id} className="bg-surface rounded p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
               <div>
-                <h4 className="font-medium capitalize">{role.name.replace(/_/g, ' ')}</h4>
+                <h4 className="font-medium capitalize text-sm sm:text-base">{role.name.replace(/_/g, ' ')}</h4>
                 {role.description && <p className="text-xs text-text-muted">{role.description}</p>}
               </div>
               {role.isSystemRole && (
-                <span className="text-xs text-text-muted bg-bg px-2 py-1 rounded">System</span>
+                <span className="text-xs text-text-muted bg-bg px-2 py-1 rounded self-start sm:self-auto">System</span>
               )}
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {allPermissions.map((perm) => (
                 <button
                   key={perm}
                   onClick={() => togglePermission(role._id, perm)}
-                  className={`text-xs px-2.5 py-1.5 rounded border transition-colors ${
+                  className={`text-[10px] sm:text-xs px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded border transition-colors ${
                     role.permissions.includes(perm)
                       ? 'bg-primary/10 border-primary text-primary'
                       : 'border-bg text-text-muted hover:border-primary/30'

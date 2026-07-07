@@ -41,16 +41,17 @@ const ImageUploader = ({ images = [], onChange, maxImages = 5 }) => {
   return (
     <div className="space-y-3">
       <label className="block text-sm font-medium text-text">Images</label>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2 sm:gap-3">
         {images.map((img, i) => (
-          <div key={i} className="relative w-24 h-24 bg-bg rounded overflow-hidden group">
+          <div key={i} className="relative w-20 h-20 sm:w-24 sm:h-24 bg-bg rounded overflow-hidden group">
             <img src={img.url} alt="" className="w-full h-full object-cover" />
             <button
               type="button"
               onClick={() => removeImage(i)}
               className="absolute top-1 right-1 p-0.5 bg-error text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              <X size={14} />
+              <X size={12} className="sm:hidden" />
+              <X size={14} className="hidden sm:block" />
             </button>
             <div className="absolute bottom-0 inset-x-0 bg-black/50 text-white text-[10px] text-center py-0.5">
               {i === 0 ? 'Cover' : `#${i + 1}`}
@@ -58,12 +59,13 @@ const ImageUploader = ({ images = [], onChange, maxImages = 5 }) => {
           </div>
         ))}
         {images.length < maxImages && (
-          <label className="w-24 h-24 border-2 border-dashed border-bg rounded flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
+          <label className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-dashed border-bg rounded flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
             {uploading ? (
               <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-primary" />
             ) : (
               <>
-                <Upload size={18} className="text-text-muted" />
+                <Upload size={16} className="sm:hidden text-text-muted" />
+                <Upload size={18} className="hidden sm:block text-text-muted" />
                 <span className="text-[10px] text-text-muted mt-1">Upload</span>
               </>
             )}

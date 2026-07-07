@@ -21,9 +21,9 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
       <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className={`relative bg-surface rounded w-full ${sizes[size]} max-h-[90vh] overflow-y-auto`}>
+      <div className={`relative bg-surface w-full sm:rounded sm:w-full ${sizes[size]} max-h-[90vh] overflow-y-auto sm:max-h-[85vh]`}>
         <div className="flex items-center justify-between p-4 border-b border-bg">
           <h3 className="font-serif text-lg">{title}</h3>
           <button onClick={onClose} className="p-1 hover:bg-bg rounded transition-colors">

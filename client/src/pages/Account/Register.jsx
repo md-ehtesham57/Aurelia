@@ -31,9 +31,9 @@ const Register = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 py-16">
-      <h1 className="font-serif text-3xl text-center mb-8">Create Account</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-surface rounded p-6 space-y-4">
+    <div className="max-w-md mx-auto px-4 py-12 sm:py-16">
+      <h1 className="font-serif text-2xl sm:text-3xl text-center mb-6 sm:mb-8">Create Account</h1>
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-surface rounded p-4 sm:p-6 space-y-4">
         <Input
           label="Name"
           {...register('name')}

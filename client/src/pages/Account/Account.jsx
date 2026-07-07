@@ -36,12 +36,12 @@ const Account = () => {
         </button>
       </div>
 
-      <div className="flex gap-6 border-b border-bg mb-6">
+      <div className="flex gap-6 border-b border-bg mb-6 overflow-x-auto scrollbar-thin">
         {['orders', 'wishlist', 'details'].map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`pb-3 text-sm capitalize transition-colors ${
+            className={`pb-3 text-sm capitalize transition-colors whitespace-nowrap shrink-0 ${
               tab === t
                 ? 'text-primary border-b-2 border-primary font-medium'
                 : 'text-text-muted hover:text-text'
@@ -89,7 +89,7 @@ const Account = () => {
       )}
 
       {tab === 'details' && (
-        <div className="bg-surface rounded p-6 space-y-3">
+        <div className="bg-surface rounded p-4 sm:p-6 space-y-3">
           <div><span className="text-sm text-text-muted">Name:</span> <span className="text-sm">{user?.name}</span></div>
           <div><span className="text-sm text-text-muted">Email:</span> <span className="text-sm">{user?.email}</span></div>
           {user?.phone && <div><span className="text-sm text-text-muted">Phone:</span> <span className="text-sm">{user.phone}</span></div>}

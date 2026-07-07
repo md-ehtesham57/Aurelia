@@ -30,20 +30,20 @@ const ProductListing = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
         <div>
-          <h1 className="font-serif text-3xl text-text">
+          <h1 className="font-serif text-2xl sm:text-3xl text-text">
             {category ? `${category.charAt(0).toUpperCase() + category.slice(1)}` : 'All Jewelry'}
           </h1>
           {pagination && (
-            <p className="text-sm text-text-muted mt-1">{pagination.total} pieces</p>
+            <p className="text-xs sm:text-sm text-text-muted mt-1">{pagination.total} pieces</p>
           )}
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 mt-3 sm:mt-0">
           <select
             value={sort}
             onChange={(e) => handleSort(e.target.value)}
-            className="text-sm bg-bg border border-bg rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="text-xs sm:text-sm bg-bg border border-bg rounded px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50"
           >
             <option value="newest">Newest</option>
             <option value="price_asc">Price: Low to High</option>
@@ -83,31 +83,66 @@ const ProductListing = () => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
                 {products.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))}
               </div>
 
               {pagination && pagination.pages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-12">
-                  {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((p) => (
+                <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-8 sm:mt-12">
+                  {page > 1 && (
                     <button
-                      key={p}
                       onClick={() => {
                         const params = new URLSearchParams(searchParams);
-                        params.set('page', p);
+                        params.set('page', page - 1);
                         setSearchParams(params);
                       }}
-                      className={`w-10 h-10 rounded text-sm transition-colors ${
-                        p === pagination.page
-                          ? 'bg-primary text-white'
-                          : 'bg-surface text-text-muted hover:text-text'
-                      }`}
+                      className="hidden xs:inline-flex w-10 h-10 items-center justify-center rounded text-sm bg-surface text-text-muted hover:text-text transition-colors"
                     >
-                      {p}
+                      Prev
                     </button>
-                  ))}
+                  )}
+                  {Array.from({ length: pagination.pages }, (_, i) => i + 1)
+                    .filter((p) => {
+                      if (pagination.pages <= 7) return true;
+                      if (p === 1 || p === pagination.pages) return true;
+                      if (Math.abs(p - page) <= 1) return true;
+                      return false;
+                    })
+                    .map((p, idx, arr) => (
+                      <span key={p} className="contents">
+                        {idx > 0 && arr[idx - 1] !== p - 1 && (
+                          <span className="w-4 text-center text-text-muted text-sm">...</span>
+                        )}
+                        <button
+                          onClick={() => {
+                            const params = new URLSearchParams(searchParams);
+                            params.set('page', p);
+                            setSearchParams(params);
+                          }}
+                          className={`w-9 h-9 sm:w-10 sm:h-10 rounded text-xs sm:text-sm transition-colors ${
+                            p === pagination.page
+                              ? 'bg-primary text-white'
+                              : 'bg-surface text-text-muted hover:text-text'
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      </span>
+                    ))}
+                  {page < pagination.pages && (
+                    <button
+                      onClick={() => {
+                        const params = new URLSearchParams(searchParams);
+                        params.set('page', page + 1);
+                        setSearchParams(params);
+                      }}
+                      className="hidden xs:inline-flex w-10 h-10 items-center justify-center rounded text-sm bg-surface text-text-muted hover:text-text transition-colors"
+                    >
+                      Next
+                    </button>
+                  )}
                 </div>
               )}
             </>

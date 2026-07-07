@@ -49,8 +49,8 @@ const Cart = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
-              <div key={item._id} className="flex gap-4 bg-surface rounded p-4">
-                <div className="w-24 h-24 bg-bg rounded overflow-hidden shrink-0">
+              <div key={item._id} className="flex flex-col xs:flex-row gap-4 bg-surface rounded p-4">
+                <div className="w-full xs:w-24 h-48 xs:h-24 bg-bg rounded overflow-hidden shrink-0">
                   <img
                     src={item.product?.images?.[0]?.url || '/placeholder.svg'}
                     alt={item.product?.title}
@@ -68,7 +68,7 @@ const Cart = () => {
                     ₹{((item.product?.basePriceOverride || 0) * item.qty).toLocaleString('en-IN')}
                   </p>
                 </div>
-                <div className="flex flex-col items-end gap-3">
+                <div className="flex flex-row xs:flex-col items-center xs:items-end justify-between xs:justify-start gap-3">
                   <button
                     onClick={() => handleRemove(item._id)}
                     className="p-1 hover:bg-bg rounded transition-colors"

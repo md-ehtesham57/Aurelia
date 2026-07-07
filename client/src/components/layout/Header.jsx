@@ -80,16 +80,14 @@ const Header = () => {
         </div>
       </div>
 
-      {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-bg">
-          <nav className="px-4 py-4 space-y-3">
-            <Link to="/products" className="block text-sm text-text-muted hover:text-text">All Jewelry</Link>
-            <Link to="/products?category=rings" className="block text-sm text-text-muted hover:text-text">Rings</Link>
-            <Link to="/products?category=necklaces" className="block text-sm text-text-muted hover:text-text">Necklaces</Link>
-            <Link to="/products?category=earrings" className="block text-sm text-text-muted hover:text-text">Earrings</Link>
-          </nav>
-        </div>
-      )}
+      <div className={`lg:hidden border-t border-bg transition-all duration-300 overflow-hidden ${mobileMenuOpen ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <nav className="px-4 py-4 space-y-3">
+          <Link to="/products" className="block text-sm text-text-muted hover:text-text" onClick={() => setMobileMenuOpen(false)}>All Jewelry</Link>
+          <Link to="/products?category=rings" className="block text-sm text-text-muted hover:text-text" onClick={() => setMobileMenuOpen(false)}>Rings</Link>
+          <Link to="/products?category=necklaces" className="block text-sm text-text-muted hover:text-text" onClick={() => setMobileMenuOpen(false)}>Necklaces</Link>
+          <Link to="/products?category=earrings" className="block text-sm text-text-muted hover:text-text" onClick={() => setMobileMenuOpen(false)}>Earrings</Link>
+        </nav>
+      </div>
     </header>
   );
 };

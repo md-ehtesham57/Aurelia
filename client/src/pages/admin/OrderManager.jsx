@@ -48,11 +48,11 @@ const OrderManager = () => {
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
+      <div className="mb-6">
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="text-sm bg-surface border border-bg rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50"
+          className="w-full sm:w-auto text-xs sm:text-sm bg-surface border border-bg rounded px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50"
         >
           <option value="">All Orders</option>
           {Object.keys(statusColors).map((s) => (

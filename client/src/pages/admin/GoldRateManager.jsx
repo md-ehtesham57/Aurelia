@@ -29,11 +29,11 @@ const GoldRateManager = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div className="bg-surface rounded p-6">
-        <h3 className="font-serif text-lg mb-4">Set Gold Rate</h3>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
+      <div className="bg-surface rounded p-4 sm:p-6">
+        <h3 className="font-serif text-base sm:text-lg mb-4">Set Gold Rate</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="block text-sm font-medium">Metal</label>
               <select
@@ -72,8 +72,8 @@ const GoldRateManager = () => {
         </form>
       </div>
 
-      <div className="bg-surface rounded p-6">
-        <h3 className="font-serif text-lg mb-4">Rate History</h3>
+      <div className="bg-surface rounded p-4 sm:p-6">
+        <h3 className="font-serif text-base sm:text-lg mb-4">Rate History</h3>
         {rates.length === 0 ? (
           <p className="text-sm text-text-muted">No rates recorded yet</p>
         ) : (

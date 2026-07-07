@@ -69,7 +69,7 @@ const Checkout = () => {
                 value={address.line2}
                 onChange={(e) => setAddress({ ...address, line2: e.target.value })}
               />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
                   label="City"
                   value={address.city}
@@ -83,7 +83,7 @@ const Checkout = () => {
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
                   label="Pincode"
                   value={address.pincode}

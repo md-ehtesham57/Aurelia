@@ -18,21 +18,22 @@ const ProductCard = ({ product }) => {
           />
           <button
             onClick={(e) => { e.preventDefault(); }}
-            className="absolute top-3 right-3 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+            className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
           >
-            <Heart size={18} className="text-text-muted hover:text-primary" />
+            <Heart size={14} className="sm:hidden text-text-muted hover:text-primary" />
+            <Heart size={18} className="hidden sm:block text-text-muted hover:text-primary" />
           </button>
-          {isNewArrival && <Badge variant="accent" className="absolute top-3 left-3">New</Badge>}
-          {isBestSeller && <Badge variant="primary" className="absolute top-3 left-3">Best Seller</Badge>}
+          {isNewArrival && <Badge variant="accent" className="absolute top-2 sm:top-3 left-2 sm:left-3 text-[10px] sm:text-xs">New</Badge>}
+          {isBestSeller && <Badge variant="primary" className="absolute top-2 sm:top-3 left-2 sm:left-3 text-[10px] sm:text-xs">Best Seller</Badge>}
         </div>
-        <div className="p-4 space-y-1">
-          <h3 className="font-serif text-lg font-medium text-text group-hover:text-primary transition-colors">
+        <div className="p-3 sm:p-4 space-y-1">
+          <h3 className="font-serif text-sm sm:text-lg font-medium text-text group-hover:text-primary transition-colors truncate">
             {title}
           </h3>
           {metal?.purity && (
-            <p className="text-sm text-text-muted">{metal.purity} {metal.type}</p>
+            <p className="text-xs sm:text-sm text-text-muted truncate">{metal.purity} {metal.type}</p>
           )}
-          <p className="font-medium text-primary">
+          <p className="font-medium text-primary text-sm sm:text-base">
             {basePriceOverride
               ? `₹${basePriceOverride.toLocaleString('en-IN')}`
               : `₹${(basePriceOverride || 0).toLocaleString('en-IN')}`}
