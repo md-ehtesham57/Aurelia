@@ -3,11 +3,14 @@ import { ArrowRight } from 'lucide-react';
 import Button from '../components/common/Button';
 import ProductCard from '../components/product/ProductCard';
 import { useGetProductsQuery } from '../features/products/productApi';
+import { useGetCategoriesQuery } from '../features/admin/adminApi';
 import Loader from '../components/common/Loader';
 
 const Home = () => {
   const { data, isLoading } = useGetProductsQuery({ limit: 8, sort: 'newest' });
+  const { data: catData } = useGetCategoriesQuery();
   const products = data?.data?.products || [];
+  const categories = catData?.data?.categories || [];
 
   return (
     <div>
@@ -88,27 +91,33 @@ const Home = () => {
       <section className="max-w-7xl mx-auto px-4 py-12 sm:py-16">
         <h2 className="font-serif text-2xl sm:text-3xl text-text mb-6 sm:mb-8 text-center sm:text-left">Shop by Category</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8">
-          <Link to="/products?category=rings" className="group relative aspect-[3/2] sm:aspect-[4/5] bg-bg rounded overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6">
-              <h3 className="font-serif text-xl sm:text-2xl text-white">Rings</h3>
-              <p className="text-xs sm:text-sm text-white/80">Explore <ArrowRight size={14} className="inline" /></p>
-            </div>
-          </Link>
-          <Link to="/products?category=necklaces" className="group relative aspect-[3/2] sm:aspect-[4/5] bg-bg rounded overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6">
-              <h3 className="font-serif text-xl sm:text-2xl text-white">Necklaces</h3>
-              <p className="text-xs sm:text-sm text-white/80">Explore <ArrowRight size={14} className="inline" /></p>
-            </div>
-          </Link>
-          <Link to="/products?category=earrings" className="group relative aspect-[3/2] sm:aspect-[4/5] bg-bg rounded overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6">
-              <h3 className="font-serif text-xl sm:text-2xl text-white">Earrings</h3>
-              <p className="text-xs sm:text-sm text-white/80">Explore <ArrowRight size={14} className="inline" /></p>
-            </div>
-          </Link>
+          {categories.length > 0 ? categories.map((cat) => (
+            <Link key={cat._id} to={`/products?category=${cat.slug}`} className="group relative aspect-[3/2] sm:aspect-[4/5] bg-bg rounded overflow-hidden">
+              {cat.image ? (
+                <img src={cat.image} alt={cat.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+              <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6">
+                <h3 className="font-serif text-xl sm:text-2xl text-white">{cat.name}</h3>
+                <p className="text-xs sm:text-sm text-white/80">Explore <ArrowRight size={14} className="inline" /></p>
+              </div>
+            </Link>
+          )) : (
+            <>
+              {['Rings', 'Necklaces', 'Earrings'].map((name) => (
+                <Link key={name} to={`/products?category=${name.toLowerCase()}`} className="group relative aspect-[3/2] sm:aspect-[4/5] bg-bg rounded overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+                  <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6">
+                    <h3 className="font-serif text-xl sm:text-2xl text-white">{name}</h3>
+                    <p className="text-xs sm:text-sm text-white/80">Explore <ArrowRight size={14} className="inline" /></p>
+                  </div>
+                </Link>
+              ))}
+            </>
+          )}
         </div>
       </section>
     </div>
