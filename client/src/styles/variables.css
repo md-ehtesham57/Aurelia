@@ -1,0 +1,11 @@
+:root {
+  --color-primary: #C6A15B;
+  --color-primary-dark: #8A6D3B;
+  --color-bg: #FAF7F2;
+  --color-surface: #FFFFFF;
+  --color-text: #2B2620;
+  --color-text-muted: #7A7168;
+  --color-accent: #1F4D3D;
+  --color-error: #B3261E;
+  --color-success: #2E7D4F;
+}

@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.server
+    ports:
+      - "5000:5000"
+    env_file:
+      - ../server/.env
+    restart: always
+
+  client:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.client
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - server
+
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    restart: always
+
+volumes:
+  mongo_data:
+  redis_data:

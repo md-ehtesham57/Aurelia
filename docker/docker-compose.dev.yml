@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.server
+    ports:
+      - "5000:5000"
+    env_file:
+      - ../server/.env
+    volumes:
+      - ../server/src:/app/src
+      - /app/node_modules
+    depends_on:
+      - mongo
+      - redis
+    command: npx nodemon src/server.js
+
+  client:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.client
+    ports:
+      - "5173:80"
+    depends_on:
+      - server
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongo_data:
+  redis_data:
