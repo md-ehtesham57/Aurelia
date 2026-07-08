@@ -35,7 +35,7 @@ const Checkout = () => {
     if (!couponCode.trim()) return;
     setCouponError('');
     try {
-      const result = await applyCoupon({ code: couponCode, orderValue: subtotal }).unwrap();
+      const result = await applyCoupon({ code: couponCode }).unwrap();
       setDiscount(result.data.coupon.discount);
       setAppliedCoupon(couponCode.toUpperCase());
       toast.success(`Coupon applied! You save ₹${result.data.coupon.discount.toLocaleString('en-IN')}`);
@@ -49,14 +49,7 @@ const Checkout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const orderItems = items.map((item) => ({
-        product: item.product._id,
-        variantSku: item.variantSku,
-        qty: item.qty,
-      }));
-
       const result = await createOrder({
-        items: orderItems,
         shippingAddress: address,
         paymentMethod,
         couponCode: appliedCoupon || undefined,

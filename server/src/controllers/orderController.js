@@ -18,14 +18,33 @@ const generateOrderNumber = () => {
 
 export const createOrder = asyncHandler(async (req, res) => {
   const {
-    items, shippingAddress, billingAddress,
+    shippingAddress, billingAddress,
     paymentMethod, couponCode, giftWrapping, giftMessage,
   } = req.validatedBody;
 
-  const productIds = items.map((i) => i.product);
-  const products = await Product.find({ _id: { $in: productIds } });
+  const cart = await Cart.findOne({ user: req.user._id }).populate('items.product');
+  if (!cart || !cart.items.length) {
+    throw new AppError('Cart is empty', 400);
+  }
+
+  const products = cart.items.filter((i) => i.product).map((i) => i.product);
+  const items = cart.items.map((i) => ({
+    product: i.product._id || i.product,
+    variantSku: i.variantSku,
+    qty: i.qty,
+  }));
 
   const { calculatedItems, subtotal } = await calculateCartTotal(items, products);
+
+  for (const item of calculatedItems) {
+    const product = products.find((p) => p._id.toString() === item.product.toString());
+    if (item.variantSku) {
+      const variant = product.variants.find((v) => v.sku === item.variantSku);
+      if (!variant || variant.stock < item.qty) {
+        throw new AppError(`Insufficient stock for ${product.title}`, 400);
+      }
+    }
+  }
 
   let discount = 0;
   let couponApplied = null;
@@ -42,6 +61,13 @@ export const createOrder = asyncHandler(async (req, res) => {
       throw new AppError('Invalid or expired coupon', 400);
     }
 
+    const usage = coupon.usedBy?.find(
+      (u) => u.user.toString() === req.user._id.toString(),
+    );
+    if (usage && usage.count >= coupon.perUserLimit) {
+      throw new AppError('Coupon usage limit reached', 400);
+    }
+
     if (subtotal < coupon.minOrderValue) {
       throw new AppError(`Minimum order value of ₹${coupon.minOrderValue} required`, 400);
     }
@@ -55,6 +81,11 @@ export const createOrder = asyncHandler(async (req, res) => {
     }
 
     coupon.usedCount += 1;
+    if (usage) {
+      usage.count += 1;
+    } else {
+      coupon.usedBy.push({ user: req.user._id, count: 1 });
+    }
     await coupon.save();
     couponApplied = coupon._id;
   }
@@ -71,7 +102,7 @@ export const createOrder = asyncHandler(async (req, res) => {
 
   const order = await Order.create({
     orderNumber: generateOrderNumber(),
-    user: req.user?._id,
+    user: req.user._id,
     items: calculatedItems,
     shippingAddress,
     billingAddress: billingAddress || shippingAddress,
@@ -102,7 +133,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   }
 
   await Cart.findOneAndUpdate(
-    { user: req.user?._id },
+    { user: req.user._id },
     { $set: { items: [] } },
   );
 

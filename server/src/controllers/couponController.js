@@ -3,7 +3,7 @@ import { sendSuccess, AppError } from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 export const applyCoupon = asyncHandler(async (req, res) => {
-  const { code, orderValue } = req.body;
+  const { code } = req.body;
 
   const coupon = await Coupon.findOne({
     code: code.toUpperCase(),
@@ -16,19 +16,16 @@ export const applyCoupon = asyncHandler(async (req, res) => {
     throw new AppError('Invalid or expired coupon', 400);
   }
 
-  if (orderValue < coupon.minOrderValue) {
-    throw new AppError(`Minimum order value of ₹${coupon.minOrderValue} required`, 400);
+  if (req.user) {
+    const usage = coupon.usedBy?.find(
+      (u) => u.user.toString() === req.user._id.toString(),
+    );
+    if (usage && usage.count >= coupon.perUserLimit) {
+      throw new AppError('Coupon usage limit reached', 400);
+    }
   }
 
-  let discount = coupon.type === 'flat'
-    ? coupon.value
-    : Math.round(orderValue * (coupon.value / 100));
-
-  if (coupon.maxDiscount && discount > coupon.maxDiscount) {
-    discount = coupon.maxDiscount;
-  }
-
-  sendSuccess(res, { coupon: { code: coupon.code, discount, type: coupon.type } });
+  sendSuccess(res, { coupon: { code: coupon.code, discount: coupon.value, type: coupon.type, minOrderValue: coupon.minOrderValue, maxDiscount: coupon.maxDiscount } });
 });
 
 export const getCoupons = asyncHandler(async (req, res) => {

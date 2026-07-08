@@ -1,11 +1,6 @@
 import { z } from 'zod';
 
 export const createOrderSchema = z.object({
-  items: z.array(z.object({
-    product: z.string(),
-    variantSku: z.string().optional(),
-    qty: z.number().int().positive(),
-  })),
   shippingAddress: z.object({
     line1: z.string().min(1),
     line2: z.string().optional(),

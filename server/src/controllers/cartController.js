@@ -1,8 +1,11 @@
+import crypto from 'crypto';
 import Cart from '../models/Cart.js';
 import Product from '../models/Product.js';
 import { sendSuccess, AppError } from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { bulkCalculatePrices } from '../services/priceCalculator.js';
+
+const MAX_CART_QTY = 99;
 
 const getCart = async (userId, sessionId) => {
   if (userId) {
@@ -38,16 +41,32 @@ export const getCartItems = asyncHandler(async (req, res) => {
   sendSuccess(res, { cart: result || { items: [], subtotal: 0 } });
 });
 
+const validateQty = (qty) => {
+  const n = Number(qty);
+  if (!Number.isInteger(n) || n < 1 || n > MAX_CART_QTY) {
+    throw new AppError(`Quantity must be an integer between 1 and ${MAX_CART_QTY}`, 400);
+  }
+  return n;
+};
+
 export const addToCart = asyncHandler(async (req, res) => {
   const { product: productId, variantSku, qty = 1 } = req.body;
+  const validQty = validateQty(qty);
 
   const product = await Product.findById(productId);
   if (!product || product.status !== 'published') {
     throw new AppError('Product not found', 404);
   }
 
+  if (variantSku) {
+    const variant = product.variants.find((v) => v.sku === variantSku);
+    if (!variant) {
+      throw new AppError('Variant not found', 404);
+    }
+  }
+
   const userId = req.user?._id;
-  const sessionId = req.cookies?.sessionId || `sess_${Date.now()}`;
+  const sessionId = req.cookies?.sessionId || crypto.randomUUID();
 
   if (!req.user) {
     res.cookie('sessionId', sessionId, {
@@ -72,9 +91,13 @@ export const addToCart = asyncHandler(async (req, res) => {
   );
 
   if (existingItem) {
-    existingItem.qty += qty;
+    const newQty = existingItem.qty + validQty;
+    if (newQty > MAX_CART_QTY) {
+      throw new AppError(`Maximum quantity per item is ${MAX_CART_QTY}`, 400);
+    }
+    existingItem.qty = newQty;
   } else {
-    cart.items.push({ product: productId, variantSku, qty });
+    cart.items.push({ product: productId, variantSku, qty: validQty });
   }
 
   await cart.save();
@@ -98,10 +121,18 @@ export const updateCartItem = asyncHandler(async (req, res) => {
   const item = cart.items.id(itemId);
   if (!item) throw new AppError('Item not found in cart', 404);
 
-  if (qty <= 0) {
+  const n = Number(qty);
+  if (!Number.isInteger(n) || n < 0) {
+    throw new AppError('Quantity must be a positive integer', 400);
+  }
+
+  if (n === 0) {
     cart.items.pull({ _id: itemId });
   } else {
-    item.qty = qty;
+    if (n > MAX_CART_QTY) {
+      throw new AppError(`Maximum quantity per item is ${MAX_CART_QTY}`, 400);
+    }
+    item.qty = n;
   }
 
   await cart.save();
