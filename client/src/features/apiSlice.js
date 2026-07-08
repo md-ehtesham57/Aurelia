@@ -31,7 +31,7 @@ export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: [
     'Products', 'Product', 'Categories', 'Cart', 'Orders', 'Order',
-    'Reviews', 'Coupons', 'Users', 'Roles', 'Banners', 'GoldRates',
+    'Reviews', 'Coupons', 'Users', 'Roles', 'Banners', 'GoldRates', 'Wishlist',
   ],
   endpoints: (builder) => ({}),
 });

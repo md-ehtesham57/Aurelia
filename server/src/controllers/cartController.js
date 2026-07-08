@@ -2,6 +2,7 @@ import Cart from '../models/Cart.js';
 import Product from '../models/Product.js';
 import { sendSuccess, AppError } from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { bulkCalculatePrices } from '../services/priceCalculator.js';
 
 const getCart = async (userId, sessionId) => {
   if (userId) {
@@ -10,11 +11,31 @@ const getCart = async (userId, sessionId) => {
   return Cart.findOne({ sessionId });
 };
 
+const attachPrices = async (cart) => {
+  if (!cart || !cart.items.length) return cart;
+  const products = cart.items
+    .filter((i) => i.product)
+    .map((i) => i.product);
+  const priceBreakdowns = await bulkCalculatePrices(products);
+  const cartObj = cart.toObject();
+  let subtotal = 0;
+  cartObj.items = cartObj.items.map((item) => {
+    const pid = item.product?._id?.toString() || item.product?.toString();
+    const pd = priceBreakdowns.find((p) => p.productId.toString() === pid);
+    const computedPrice = pd?.total || 0;
+    subtotal += computedPrice * item.qty;
+    return { ...item, computedPrice };
+  });
+  cartObj.subtotal = subtotal;
+  return cartObj;
+};
+
 export const getCartItems = asyncHandler(async (req, res) => {
-  const cart = await getCart(req.user?._id, req.cookies?.sessionId)
+  let cart = await getCart(req.user?._id, req.cookies?.sessionId)
     .populate('items.product');
 
-  sendSuccess(res, { cart: cart || { items: [] } });
+  const result = await attachPrices(cart);
+  sendSuccess(res, { cart: result || { items: [], subtotal: 0 } });
 });
 
 export const addToCart = asyncHandler(async (req, res) => {
@@ -55,8 +76,9 @@ export const addToCart = asyncHandler(async (req, res) => {
   await cart.save();
 
   await cart.populate('items.product');
+  const cartWithPrices = await attachPrices(cart);
 
-  sendSuccess(res, { cart }, 'Item added to cart');
+  sendSuccess(res, { cart: cartWithPrices }, 'Item added to cart');
 });
 
 export const updateCartItem = asyncHandler(async (req, res) => {
@@ -80,8 +102,9 @@ export const updateCartItem = asyncHandler(async (req, res) => {
 
   await cart.save();
   await cart.populate('items.product');
+  const updatedCart = await attachPrices(cart);
 
-  sendSuccess(res, { cart }, 'Cart updated');
+  sendSuccess(res, { cart: updatedCart }, 'Cart updated');
 });
 
 export const removeCartItem = asyncHandler(async (req, res) => {
@@ -95,8 +118,10 @@ export const removeCartItem = asyncHandler(async (req, res) => {
 
   cart.items.pull({ _id: itemId });
   await cart.save();
+  await cart.populate('items.product');
+  const updatedCart = await attachPrices(cart);
 
-  sendSuccess(res, { cart }, 'Item removed from cart');
+  sendSuccess(res, { cart: updatedCart }, 'Item removed from cart');
 });
 
 export const mergeCart = asyncHandler(async (req, res) => {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Package, ShoppingCart, Tags, Users, Shield,
-  Percent, Image, DollarSign, Menu, X, LogOut,
+  Percent, Image, DollarSign, MessageSquare, Menu, X, LogOut,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -16,6 +16,7 @@ const sidebarLinks = [
   { to: '/admin/coupons', icon: Percent, label: 'Coupons' },
   { to: '/admin/banners', icon: Image, label: 'Banners' },
   { to: '/admin/gold-rate', icon: DollarSign, label: 'Gold Rate' },
+  { to: '/admin/reviews', icon: MessageSquare, label: 'Reviews' },
 ];
 
 const AdminLayout = () => {

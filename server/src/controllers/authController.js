@@ -4,7 +4,7 @@ import User from '../models/User.js';
 import Role from '../models/Role.js';
 import { sendSuccess, sendError, AppError } from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
-import { sendPasswordReset, sendWelcomeEmail } from '../services/emailService.js';
+import { sendPasswordReset, sendWelcomeEmail, sendVerificationEmail } from '../services/emailService.js';
 
 const generateAccessToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -53,6 +53,12 @@ export const register = asyncHandler(async (req, res) => {
   setRefreshTokenCookie(res, refreshToken);
 
   sendWelcomeEmail(user).catch(() => {});
+
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  user.verificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+  user.verificationExpire = Date.now() + 86400000;
+  await user.save();
+  sendVerificationEmail(user, verificationToken).catch(() => {});
 
   sendSuccess(res, {
     user: user.toJSON(),
@@ -144,4 +150,42 @@ export const resetPassword = asyncHandler(async (req, res) => {
   await user.save();
 
   sendSuccess(res, null, 'Password reset successful');
+});
+
+export const verifyEmail = asyncHandler(async (req, res) => {
+  const { token } = req.validatedBody;
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  const user = await User.findOne({
+    verificationToken: hashedToken,
+    verificationExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    throw new AppError('Invalid or expired verification token', 400);
+  }
+
+  user.isVerified = true;
+  user.verificationToken = undefined;
+  user.verificationExpire = undefined;
+  await user.save();
+
+  sendSuccess(res, null, 'Email verified successfully');
+});
+
+export const resendVerification = asyncHandler(async (req, res) => {
+  const { email } = req.validatedBody;
+  const user = await User.findOne({ email });
+
+  if (!user || user.isVerified) {
+    sendSuccess(res, null, 'If the email exists and is unverified, a new verification link has been sent.');
+    return;
+  }
+
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  user.verificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+  user.verificationExpire = Date.now() + 86400000;
+  await user.save();
+
+  sendVerificationEmail(user, verificationToken).catch(() => {});
+  sendSuccess(res, null, 'If the email exists and is unverified, a new verification link has been sent.');
 });

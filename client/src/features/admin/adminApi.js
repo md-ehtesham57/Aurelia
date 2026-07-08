@@ -65,13 +65,25 @@ export const adminApi = apiSlice.injectEndpoints({
       invalidatesTags: ['Roles'],
     }),
     getBanners: builder.query({
-      query: () => '/banners',
+      query: (all) => `/banners${all ? '?all=true' : ''}`,
+      providesTags: ['Banners'],
+    }),
+    getAdminBanners: builder.query({
+      query: () => '/banners?all=true',
       providesTags: ['Banners'],
     }),
     createBanner: builder.mutation({
       query: (data) => ({
         url: '/banners',
         method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Banners'],
+    }),
+    updateBanner: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/banners/${id}`,
+        method: 'PATCH',
         body: data,
       }),
       invalidatesTags: ['Banners'],
@@ -100,6 +112,13 @@ export const adminApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Coupons'],
     }),
+    applyCoupon: builder.mutation({
+      query: (data) => ({
+        url: '/coupons/apply',
+        method: 'POST',
+        body: data,
+      }),
+    }),
     uploadImage: builder.mutation({
       query: (formData) => ({
         url: '/upload/image',
@@ -121,10 +140,13 @@ export const {
   useCreateRoleMutation,
   useUpdateRolePermissionsMutation,
   useGetBannersQuery,
+  useGetAdminBannersQuery,
   useCreateBannerMutation,
+  useUpdateBannerMutation,
   useGetGoldRatesQuery,
   useUpdateGoldRateMutation,
   useGetCouponsQuery,
   useCreateCouponMutation,
+  useApplyCouponMutation,
   useUploadImageMutation,
 } = adminApi;

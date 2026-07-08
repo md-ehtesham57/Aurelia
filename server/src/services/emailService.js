@@ -54,3 +54,13 @@ export const sendWelcomeEmail = async (user) => {
   `;
   return sendEmail({ to: user.email, subject: 'Welcome to Aurelia Jewels', html });
 };
+
+export const sendVerificationEmail = async (user, token) => {
+  const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
+  const html = `
+    <h1>Verify Your Email</h1>
+    <p>Dear ${user.name},</p>
+    <p>Click <a href="${verifyUrl}">here</a> to verify your email address.</p>
+  `;
+  return sendEmail({ to: user.email, subject: 'Verify your email - Aurelia Jewels', html });
+};

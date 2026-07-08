@@ -2,7 +2,7 @@ import GoldRateConfig from '../models/GoldRateConfig.js';
 
 const GST_RATE = 0.03;
 
-export const calculateProductPrice = async (product) => {
+function computePrice(product, rateConfig) {
   if (product.basePriceOverride) {
     return {
       basePrice: product.basePriceOverride,
@@ -13,19 +13,7 @@ export const calculateProductPrice = async (product) => {
     };
   }
 
-  const metal = product.metal?.type || 'gold';
-  const purity = product.metal?.purity || '22K';
-
-  const rateConfig = await GoldRateConfig.findOne({
-    metalType: metal,
-    purity,
-  }).sort({ effectiveDate: -1 });
-
-  if (!rateConfig) {
-    throw new Error(`No gold rate configured for ${metal} ${purity}`);
-  }
-
-  const metalValue = (product.weightGrams || 0) * rateConfig.ratePerGram;
+  const metalValue = (product.weightGrams || 0) * (rateConfig?.ratePerGram || 0);
 
   let makingCharges = 0;
   if (product.makingChargeType === 'flat') {
@@ -43,12 +31,64 @@ export const calculateProductPrice = async (product) => {
     makingCharges,
     gst,
     total,
-    ratePerGram: rateConfig.ratePerGram,
-    purity,
+    ratePerGram: rateConfig?.ratePerGram || null,
+    purity: product.metal?.purity || null,
   };
+}
+
+export const calculateProductPrice = async (product) => {
+  if (product.basePriceOverride) {
+    return computePrice(product, null);
+  }
+
+  const metal = product.metal?.type || 'gold';
+  const purity = product.metal?.purity || '22K';
+
+  const rateConfig = await GoldRateConfig.findOne({
+    metalType: metal,
+    purity,
+  }).sort({ effectiveDate: -1 });
+
+  if (!rateConfig) {
+    throw new Error(`No gold rate configured for ${metal} ${purity}`);
+  }
+
+  return computePrice(product, rateConfig);
 };
 
+export async function bulkCalculatePrices(products) {
+  if (!products.length) return [];
+
+  const keys = new Set();
+  products.forEach((p) => {
+    if (!p.basePriceOverride && p.metal?.type) {
+      keys.add(`${p.metal.type}:${p.metal.purity || '22K'}`);
+    }
+  });
+
+  const rateMap = {};
+  if (keys.size) {
+    const orConditions = [];
+    keys.forEach((k) => {
+      const [metalType, purity] = k.split(':');
+      orConditions.push({ metalType, purity });
+    });
+    const rates = await GoldRateConfig.find({ $or: orConditions }).sort({ effectiveDate: -1 });
+    for (const r of rates) {
+      const k = `${r.metalType}:${r.purity}`;
+      if (!rateMap[k]) rateMap[k] = r;
+    }
+  }
+
+  return products.map((product) => {
+    const key = product.metal?.type ? `${product.metal.type}:${product.metal.purity || '22K'}` : null;
+    const rateConfig = key ? rateMap[key] : null;
+    return { ...computePrice(product, rateConfig), productId: product._id };
+  });
+}
+
 export const calculateCartTotal = async (cartItems, products) => {
+  const priceBreakdowns = await bulkCalculatePrices(products);
   let subtotal = 0;
   const calculatedItems = [];
 
@@ -57,18 +97,17 @@ export const calculateCartTotal = async (cartItems, products) => {
     const product = products.find(
       (p) => p._id.toString() === (item.product?._id?.toString() || item.product.toString()),
     );
-
     if (!product) continue;
 
-    const priceBreakdown = await calculateProductPrice(product);
-    const itemTotal = priceBreakdown.total * item.qty;
+    const pd = priceBreakdowns.find((p) => p.productId.toString() === product._id.toString());
+    const itemTotal = (pd?.total || 0) * item.qty;
     subtotal += itemTotal;
 
     calculatedItems.push({
       product: product._id,
       variantSku: item.variantSku,
       qty: item.qty,
-      priceAtPurchase: priceBreakdown.total,
+      priceAtPurchase: pd?.total || 0,
       weightAtPurchase: product.weightGrams,
     });
   }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Search, Heart, ShoppingBag, User, Menu, X } from 'lucide-react';
@@ -6,9 +6,32 @@ import MegaMenu from './MegaMenu';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchRef = useRef(null);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { itemCount } = useSelector((state) => state.cart);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (searchOpen && searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, [searchOpen]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
+
+  const toggleSearch = () => {
+    setSearchOpen(!searchOpen);
+    if (searchOpen) setSearchQuery('');
+  };
 
   const hasAdminAccess = user?.role?.permissions?.some(
     (p) => p.startsWith('product:') || p.startsWith('order:'),
@@ -30,9 +53,12 @@ const Header = () => {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-8">
-            <Link to="/products" className="text-sm text-text-muted hover:text-text transition-colors">
-              All Jewelry
-            </Link>
+            <div className="group relative">
+              <button className="text-sm text-text-muted hover:text-text transition-colors cursor-default">
+                Shop
+              </button>
+              <MegaMenu />
+            </div>
             <Link to="/products?category=rings" className="text-sm text-text-muted hover:text-text transition-colors">
               Rings
             </Link>
@@ -45,12 +71,29 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center gap-3">
-            <button className="p-2 hover:bg-bg rounded transition-colors">
-              <Search size={18} className="text-text-muted" />
-            </button>
-            <button className="p-2 hover:bg-bg rounded transition-colors">
+            <div className="relative">
+              <button onClick={toggleSearch} className="p-2 hover:bg-bg rounded transition-colors">
+                <Search size={18} className="text-text-muted" />
+              </button>
+              {searchOpen && (
+                <form onSubmit={handleSearch} className="absolute right-0 top-full mt-2 w-72 bg-surface border border-bg rounded shadow-sm overflow-hidden flex">
+                  <input
+                    ref={searchRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search products..."
+                    className="flex-1 px-4 py-2.5 text-sm bg-transparent focus:outline-none"
+                  />
+                  <button type="submit" className="px-3 py-2.5 bg-primary text-white text-sm hover:bg-primary-dark transition-colors">
+                    Go
+                  </button>
+                </form>
+              )}
+            </div>
+            <Link to={isAuthenticated ? '/account?tab=wishlist' : '/login'} className="p-2 hover:bg-bg rounded transition-colors">
               <Heart size={18} className="text-text-muted" />
-            </button>
+            </Link>
             <button
               onClick={() => navigate('/cart')}
               className="p-2 hover:bg-bg rounded transition-colors relative"

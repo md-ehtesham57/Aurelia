@@ -19,6 +19,11 @@ export const updateMe = asyncHandler(async (req, res) => {
   sendSuccess(res, { user: user.toJSON() }, 'Profile updated');
 });
 
+export const getWishlist = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).populate('wishlist');
+  sendSuccess(res, { wishlist: user.wishlist || [] });
+});
+
 export const addToWishlist = asyncHandler(async (req, res) => {
   const { productId } = req.body;
   const user = await User.findById(req.user._id);

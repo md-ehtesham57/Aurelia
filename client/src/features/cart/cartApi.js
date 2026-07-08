@@ -29,6 +29,14 @@ export const cartApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Cart'],
     }),
+    mergeCart: builder.mutation({
+      query: (sessionId) => ({
+        url: '/cart/merge',
+        method: 'POST',
+        body: { sessionId },
+      }),
+      invalidatesTags: ['Cart'],
+    }),
   }),
 });
 
@@ -37,4 +45,5 @@ export const {
   useAddToCartMutation,
   useUpdateCartItemMutation,
   useRemoveCartItemMutation,
+  useMergeCartMutation,
 } = cartApi;

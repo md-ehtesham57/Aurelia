@@ -92,7 +92,7 @@ const ProductManager = () => {
                   <td className="p-4 text-text-muted">
                     {product.metal?.purity ? `${product.metal.purity} ${product.metal.type}` : '—'}
                   </td>
-                  <td className="p-4">₹{(product.basePriceOverride || 0).toLocaleString('en-IN')}</td>
+                  <td className="p-4">₹{((product.priceBreakdown?.total || product.basePriceOverride) || 0).toLocaleString('en-IN')}</td>
                   <td className="p-4">
                     <select
                       value={product.status}
@@ -151,7 +151,7 @@ const ProductManager = () => {
                     <p className="font-medium truncate">{product.title}</p>
                     <p className="text-xs text-text-muted">{product.sku}</p>
                     <p className="text-xs text-text-muted">{product.category?.name || '—'} • {product.metal?.purity ? `${product.metal.purity} ${product.metal.type}` : '—'}</p>
-                    <p className="text-sm font-medium text-primary mt-1">₹{(product.basePriceOverride || 0).toLocaleString('en-IN')}</p>
+                    <p className="text-sm font-medium text-primary mt-1">₹{((product.priceBreakdown?.total || product.basePriceOverride) || 0).toLocaleString('en-IN')}</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between gap-2">
@@ -204,7 +204,7 @@ const ProductManager = () => {
                 <p><span className="text-text-muted">Category:</span> {viewProduct.category?.name || '—'}</p>
                 <p><span className="text-text-muted">Metal:</span> {viewProduct.metal?.purity ? `${viewProduct.metal.purity} ${viewProduct.metal.type}` : '—'}</p>
                 <p><span className="text-text-muted">Weight:</span> {viewProduct.weightGrams ? `${viewProduct.weightGrams}g` : '—'}</p>
-                <p><span className="text-text-muted">Price:</span> ₹{(viewProduct.basePriceOverride || 0).toLocaleString('en-IN')}</p>
+                <p><span className="text-text-muted">Price:</span> ₹{((viewProduct.priceBreakdown?.total || viewProduct.basePriceOverride) || 0).toLocaleString('en-IN')}</p>
                 <p><span className="text-text-muted">Status:</span> <span className="capitalize">{viewProduct.status}</span></p>
               </div>
             </div>

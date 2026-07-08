@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Heart, Minus, Plus, ShoppingBag, ChevronRight, Shield } from 'lucide-react';
+import { Heart, Minus, Plus, ShoppingBag, ChevronRight, Shield, Star } from 'lucide-react';
 import { useGetProductBySlugQuery } from '../features/products/productApi';
 import { useAddToCartMutation } from '../features/cart/cartApi';
 import { useAuth } from '../hooks/useAuth';
+import { useToggleWishlistMutation, useGetWishlistQuery } from '../features/auth/authApi';
+import { useCreateReviewMutation } from '../features/reviews/reviewApi';
 import Button from '../components/common/Button';
 import Badge from '../components/common/Badge';
 import Loader from '../components/common/Loader';
@@ -14,6 +16,9 @@ const ProductDetail = () => {
   const { data, isLoading } = useGetProductBySlugQuery(slug);
   const [addToCart] = useAddToCartMutation();
   const { isAuthenticated } = useAuth();
+  const { data: wishlistData } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
+  const [toggleWishlist] = useToggleWishlistMutation();
+  const wishlistIds = wishlistData?.data?.wishlist?.map((p) => p._id || p) || [];
   const [qty, setQty] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -83,12 +88,35 @@ const ProductDetail = () => {
             )}
           </div>
 
-          <div className="flex items-baseline gap-4">
-            <span className="font-serif text-3xl text-primary">
-              ₹{(product.basePriceOverride || 0).toLocaleString('en-IN')}
-            </span>
-            {product.metal?.purity && (
-              <span className="text-sm text-text-muted">{product.metal.purity} {product.metal.type}</span>
+          <div>
+            <div className="flex items-baseline gap-4">
+              <span className="font-serif text-3xl text-primary">
+                ₹{(product.priceBreakdown?.total || product.basePriceOverride || 0).toLocaleString('en-IN')}
+              </span>
+              {product.metal?.purity && (
+                <span className="text-sm text-text-muted">{product.metal.purity} {product.metal.type}</span>
+              )}
+            </div>
+            {product.priceBreakdown?.metalValue > 0 && (
+              <div className="mt-3 space-y-1 text-xs text-text-muted bg-bg rounded p-3 sm:p-4">
+                <div className="flex justify-between">
+                  <span>Metal Value ({product.priceBreakdown.purity} @ ₹{product.priceBreakdown.ratePerGram}/g)</span>
+                  <span>₹{product.priceBreakdown.metalValue.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Making Charges</span>
+                  <span>₹{product.priceBreakdown.makingCharges.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>GST (3%)</span>
+                  <span>₹{product.priceBreakdown.gst.toLocaleString('en-IN')}</span>
+                </div>
+                <hr className="border-surface" />
+                <div className="flex justify-between font-medium text-text">
+                  <span>Total</span>
+                  <span>₹{product.priceBreakdown.total.toLocaleString('en-IN')}</span>
+                </div>
+              </div>
             )}
           </div>
 
@@ -134,8 +162,17 @@ const ProductDetail = () => {
               <ShoppingBag size={18} className="mr-2" />
               Add to Cart
             </Button>
-            <button className="p-3 border border-bg rounded hover:bg-bg transition-colors self-start">
-              <Heart size={20} className="text-text-muted" />
+            <button
+              onClick={async () => {
+                if (!isAuthenticated) { toast.error('Please sign in'); return; }
+                try {
+                  await toggleWishlist(product._id).unwrap();
+                  toast.success(wishlistIds.includes(product._id) ? 'Removed from wishlist' : 'Added to wishlist');
+                } catch { toast.error('Failed'); }
+              }}
+              className="p-3 border border-bg rounded hover:bg-bg transition-colors self-start"
+            >
+              <Heart size={20} className={wishlistIds.includes(product._id) ? 'fill-primary text-primary' : 'text-text-muted'} />
             </button>
           </div>
 
@@ -156,29 +193,74 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {product.reviews?.length > 0 && (
-        <section className="mt-12 sm:mt-16">
-          <h2 className="font-serif text-xl sm:text-2xl mb-4 sm:mb-6">Customer Reviews</h2>
-          <div className="space-y-3 sm:space-y-4">
-            {product.reviews.map((review) => (
-              <div key={review._id} className="bg-surface rounded p-3 sm:p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="flex">
-                    {Array.from({ length: 5 }, (_, i) => (
-                      <span key={i} className={`text-sm ${i < review.rating ? 'text-primary' : 'text-bg'}`}>
-                        &#9733;
-                      </span>
-                    ))}
-                  </div>
-                  <span className="text-xs sm:text-sm font-medium">{review.user?.name}</span>
+      <section className="mt-12 sm:mt-16">
+        <h2 className="font-serif text-xl sm:text-2xl mb-4 sm:mb-6">Customer Reviews</h2>
+        <div className="space-y-3 sm:space-y-4">
+          {(product.reviews || []).map((review) => (
+            <div key={review._id} className="bg-surface rounded p-3 sm:p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <span key={i} className={`text-sm ${i < review.rating ? 'text-primary' : 'text-bg'}`}>
+                      &#9733;
+                    </span>
+                  ))}
                 </div>
-                {review.comment && <p className="text-xs sm:text-sm text-text-muted">{review.comment}</p>}
+                <span className="text-xs sm:text-sm font-medium">{review.user?.name}</span>
               </div>
-            ))}
-          </div>
-        </section>
-      )}
+              {review.comment && <p className="text-xs sm:text-sm text-text-muted">{review.comment}</p>}
+            </div>
+          ))}
+        </div>
+        {isAuthenticated && (
+          <ReviewForm productId={product._id} onSubmitted={() => window.location.reload()} />
+        )}
+      </section>
     </div>
+  );
+};
+
+const ReviewForm = ({ productId, onSubmitted }) => {
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
+  const [comment, setComment] = useState('');
+  const [createReview, { isLoading }] = useCreateReviewMutation();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!rating) { toast.error('Please select a rating'); return; }
+    try {
+      await createReview({ product: productId, rating, comment }).unwrap();
+      toast.success('Review submitted! It will appear after moderation.');
+      setRating(0);
+      setComment('');
+      onSubmitted();
+    } catch (err) {
+      toast.error(err.data?.message || 'Failed to submit review');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="bg-surface rounded p-4 sm:p-6 mt-6 space-y-4">
+      <h3 className="font-medium text-sm">Write a Review</h3>
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button key={star} type="button" onClick={() => setRating(star)} onMouseEnter={() => setHover(star)} onMouseLeave={() => setHover(0)} className="p-0.5">
+            <Star size={20} className={star <= (hover || rating) ? 'fill-primary text-primary' : 'text-bg'} />
+          </button>
+        ))}
+      </div>
+      <textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="Share your experience with this product..."
+        className="w-full bg-bg border border-bg rounded p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 min-h-[100px] resize-y"
+        required
+      />
+      <Button type="submit" size="sm" disabled={isLoading}>
+        {isLoading ? 'Submitting...' : 'Submit Review'}
+      </Button>
+    </form>
   );
 };
 

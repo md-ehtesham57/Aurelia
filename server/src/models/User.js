@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
   authProvider: { type: String, enum: ['local', 'google'], default: 'local' },
   twoFactorSecret: String,
   isTwoFactorEnabled: { type: Boolean, default: false },
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
+  verificationToken: String,
+  verificationExpire: Date,
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {

@@ -47,6 +47,29 @@ export const getProductReviews = asyncHandler(async (req, res) => {
   sendSuccess(res, { reviews });
 });
 
+export const getAllReviews = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 20, status } = req.query;
+  const filter = {};
+  if (status) filter.status = status;
+
+  const skip = (Number(page) - 1) * Number(limit);
+
+  const [reviews, total] = await Promise.all([
+    Review.find(filter)
+      .populate('user', 'name email')
+      .populate('product', 'title slug')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit)),
+    Review.countDocuments(filter),
+  ]);
+
+  sendSuccess(res, {
+    reviews,
+    pagination: { page: Number(page), limit: Number(limit), total, pages: Math.ceil(total / Number(limit)) },
+  });
+});
+
 export const moderateReview = asyncHandler(async (req, res) => {
   const { status } = req.body;
   const review = await Review.findByIdAndUpdate(

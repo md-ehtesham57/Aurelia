@@ -29,7 +29,7 @@ const Cart = () => {
     }
   };
 
-  const subtotal = items.reduce((sum, item) => sum + (item.product?.basePriceOverride || 0) * item.qty, 0);
+  const subtotal = cart?.subtotal || items.reduce((sum, item) => sum + ((item.computedPrice || item.product?.basePriceOverride || 0) * item.qty), 0);
 
   if (isLoading) return <Loader />;
 
@@ -65,7 +65,7 @@ const Cart = () => {
                     {item.product?.metal?.purity} {item.product?.metal?.type}
                   </p>
                   <p className="text-primary font-medium mt-1">
-                    ₹{((item.product?.basePriceOverride || 0) * item.qty).toLocaleString('en-IN')}
+                    ₹{((item.computedPrice || item.product?.basePriceOverride || 0) * item.qty).toLocaleString('en-IN')}
                   </p>
                 </div>
                 <div className="flex flex-row xs:flex-col items-center xs:items-end justify-between xs:justify-start gap-3">

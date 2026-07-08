@@ -1,7 +1,9 @@
 import Product from '../models/Product.js';
+import Category from '../models/Category.js';
 import { sendSuccess, sendError, AppError } from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import slugify from 'slugify';
+import { calculateProductPrice, bulkCalculatePrices } from '../services/priceCalculator.js';
 
 export const getProducts = asyncHandler(async (req, res) => {
   const {
@@ -12,7 +14,13 @@ export const getProducts = asyncHandler(async (req, res) => {
 
   const filter = { status: 'published' };
 
-  if (category) filter.category = category;
+  if (category) {
+    const cat = await Category.findOne({ slug: category }).select('_id');
+    if (!cat) {
+      return sendSuccess(res, { products: [], pagination: { page: 1, pages: 1, total: 0 } }, 'No products found');
+    }
+    filter.category = cat._id;
+  }
   if (metal) filter['metal.type'] = metal;
   if (purity) filter['metal.purity'] = purity;
   if (occasion) filter.occasion = { $in: occasion.split(',') };
@@ -53,8 +61,17 @@ export const getProducts = asyncHandler(async (req, res) => {
     Product.countDocuments(filter),
   ]);
 
+  const priceBreakdowns = await bulkCalculatePrices(products);
+
+  const productsWithPrice = products.map((product) => {
+    const pd = priceBreakdowns.find((p) => p.productId.toString() === product._id.toString());
+    const productObj = product.toObject();
+    productObj.priceBreakdown = pd || {};
+    return productObj;
+  });
+
   sendSuccess(res, {
-    products,
+    products: productsWithPrice,
     pagination: {
       page: Number(page),
       limit: Number(limit),
@@ -77,7 +94,11 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
     throw new AppError('Product not found', 404);
   }
 
-  sendSuccess(res, { product });
+  const priceBreakdown = await calculateProductPrice(product);
+  const productObj = product.toObject();
+  productObj.priceBreakdown = priceBreakdown;
+
+  sendSuccess(res, { product: productObj });
 });
 
 export const createProduct = asyncHandler(async (req, res) => {
@@ -146,8 +167,17 @@ export const getAdminProducts = asyncHandler(async (req, res) => {
     Product.countDocuments(filter),
   ]);
 
+  const priceBreakdowns = await bulkCalculatePrices(products);
+
+  const productsWithPrice = products.map((product) => {
+    const pd = priceBreakdowns.find((p) => p.productId.toString() === product._id.toString());
+    const productObj = product.toObject();
+    productObj.priceBreakdown = pd || {};
+    return productObj;
+  });
+
   sendSuccess(res, {
-    products,
+    products: productsWithPrice,
     pagination: {
       page: Number(page),
       limit: Number(limit),

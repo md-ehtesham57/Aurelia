@@ -1,43 +1,107 @@
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Button from '../components/common/Button';
 import ProductCard from '../components/product/ProductCard';
 import { useGetProductsQuery } from '../features/products/productApi';
-import { useGetCategoriesQuery } from '../features/admin/adminApi';
+import { useGetCategoriesQuery, useGetBannersQuery } from '../features/admin/adminApi';
 import Loader from '../components/common/Loader';
 
-const Home = () => {
-  const { data, isLoading } = useGetProductsQuery({ limit: 8, sort: 'newest' });
-  const { data: catData } = useGetCategoriesQuery();
-  const products = data?.data?.products || [];
-  const categories = catData?.data?.categories || [];
+const HeroBanner = ({ banners }) => {
+  const [current, setCurrent] = useState(0);
 
-  return (
-    <div>
+  const next = useCallback(() => setCurrent((c) => (c + 1) % banners.length), [banners.length]);
+  const prev = useCallback(() => setCurrent((c) => (c - 1 + banners.length) % banners.length), [banners.length]);
+
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const timer = setInterval(next, 5000);
+    return () => clearInterval(timer);
+  }, [banners.length, next]);
+
+  if (!banners.length) {
+    return (
       <section className="relative bg-bg py-12 sm:py-16 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4">
           <div className="max-w-2xl">
-            <p className="text-primary font-medium text-xs sm:text-sm tracking-widest uppercase mb-3 sm:mb-4">
-              Fine Jewelry Collection
-            </p>
-            <h1 className="font-serif text-3xl sm:text-5xl lg:text-7xl text-text mb-4 sm:mb-6 leading-tight">
-              Wear the Warmth <br className="hidden xs:inline sm:hidden" />of Gold.
-            </h1>
-            <p className="text-text-muted text-sm sm:text-base lg:text-lg mb-6 sm:mb-8 leading-relaxed max-w-prose">
-              Discover handcrafted jewelry that celebrates life's precious moments.
-              From everyday elegance to timeless heirlooms.
-            </p>
+            <p className="text-primary font-medium text-xs sm:text-sm tracking-widest uppercase mb-3 sm:mb-4">Fine Jewelry Collection</p>
+            <h1 className="font-serif text-3xl sm:text-5xl lg:text-7xl text-text mb-4 sm:mb-6 leading-tight">Wear the Warmth <br className="hidden xs:inline sm:hidden" />of Gold.</h1>
+            <p className="text-text-muted text-sm sm:text-base lg:text-lg mb-6 sm:mb-8 leading-relaxed max-w-prose">Discover handcrafted jewelry that celebrates life's precious moments. From everyday elegance to timeless heirlooms.</p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <Link to="/products">
-                <Button size="lg" className="w-full sm:w-auto">Explore Collection</Button>
-              </Link>
-              <Link to="/products?category=rings">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto">View Rings</Button>
-              </Link>
+              <Link to="/products"><Button size="lg" className="w-full sm:w-auto">Explore Collection</Button></Link>
+              <Link to="/products?category=rings"><Button variant="outline" size="lg" className="w-full sm:w-auto">View Rings</Button></Link>
             </div>
           </div>
         </div>
       </section>
+    );
+  }
+
+  const banner = banners[current];
+
+  return (
+    <section className="relative overflow-hidden bg-bg">
+      <div className="relative min-h-[200px] sm:min-h-[350px] lg:min-h-[450px]">
+        <img
+          src={banner.image}
+          alt={banner.title}
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="eager"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent sm:bg-gradient-to-r sm:from-black/60 sm:to-transparent" />
+        <div className="absolute inset-0 flex items-center">
+          <div className="max-w-7xl mx-auto px-4 w-full">
+            <div className="max-w-lg">
+              {banner.title && <h1 className="font-serif text-xl sm:text-4xl lg:text-5xl text-white mb-2 sm:mb-4 leading-tight">{banner.title}</h1>}
+              {banner.linkUrl && (
+                <Link to={banner.linkUrl}>
+                  <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black text-xs sm:text-sm">
+                    Shop Now
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      {banners.length > 1 && (
+        <>
+          <button onClick={prev} className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 bg-black/30 hover:bg-black/50 text-white rounded-full transition-colors">
+            <ChevronLeft size={18} className="sm:size-5" />
+          </button>
+          <button onClick={next} className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 bg-black/30 hover:bg-black/50 text-white rounded-full transition-colors">
+            <ChevronRight size={18} className="sm:size-5" />
+          </button>
+          <div className="absolute bottom-3 sm:bottom-4 inset-x-0 flex justify-center gap-1.5 sm:gap-2">
+            {banners.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrent(i)}
+                className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${i === current ? 'bg-white' : 'bg-white/40'}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+      {banner.linkUrl ? (
+        <Link to={banner.linkUrl} className="absolute inset-0" aria-label={banner.title || 'Banner'} />
+      ) : null}
+    </section>
+  );
+};
+
+const Home = () => {
+  const { data, isLoading } = useGetProductsQuery({ limit: 8, sort: 'newest' });
+  const { data: catData } = useGetCategoriesQuery();
+  const { data: bannerData } = useGetBannersQuery();
+  const products = data?.data?.products || [];
+  const categories = catData?.data?.categories || [];
+  const heroBanners = (bannerData?.data?.banners || []).filter((b) => b.position === 'homepage_hero');
+  const stripBanners = (bannerData?.data?.banners || []).filter((b) => b.position === 'homepage_strip');
+
+  return (
+    <div>
+      <HeroBanner banners={heroBanners} />
 
       <section className="max-w-7xl mx-auto px-4 py-16">
         <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between mb-6 sm:mb-10">
@@ -87,6 +151,21 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {stripBanners.map((banner) => (
+        <section key={banner._id} className="overflow-hidden bg-bg">
+          <Link to={banner.linkUrl || '#'} className="relative block min-h-[80px] sm:min-h-[120px] lg:min-h-[160px]">
+            <img src={banner.image} alt={banner.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+            {banner.title && (
+              <div className="absolute inset-0 flex items-center justify-center p-4">
+                <h2 className="font-serif text-base sm:text-2xl lg:text-3xl text-white bg-black/40 px-4 sm:px-6 py-2 sm:py-3 rounded text-center">
+                  {banner.title}
+                </h2>
+              </div>
+            )}
+          </Link>
+        </section>
+      ))}
 
       <section className="max-w-7xl mx-auto px-4 py-12 sm:py-16">
         <h2 className="font-serif text-2xl sm:text-3xl text-text mb-6 sm:mb-8 text-center sm:text-left">Shop by Category</h2>

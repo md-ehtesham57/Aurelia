@@ -25,7 +25,59 @@ export const authApi = apiSlice.injectEndpoints({
     getMe: builder.query({
       query: () => '/users/me',
     }),
+    updateMe: builder.mutation({
+      query: (data) => ({
+        url: '/users/me',
+        method: 'PATCH',
+        body: data,
+      }),
+    }),
+    verifyEmail: builder.mutation({
+      query: (data) => ({
+        url: '/auth/verify-email',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    resendVerification: builder.mutation({
+      query: (data) => ({
+        url: '/auth/resend-verification',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    forgotPassword: builder.mutation({
+      query: (data) => ({
+        url: '/auth/forgot-password',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    resetPassword: builder.mutation({
+      query: (data) => ({
+        url: '/auth/reset-password',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    getWishlist: builder.query({
+      query: () => '/users/wishlist',
+      providesTags: ['Wishlist'],
+    }),
+    toggleWishlist: builder.mutation({
+      query: (productId) => ({
+        url: '/users/wishlist',
+        method: 'POST',
+        body: { productId },
+      }),
+      invalidatesTags: ['Wishlist'],
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLogoutMutation, useGetMeQuery } = authApi;
+export const {
+  useLoginMutation, useRegisterMutation, useLogoutMutation, useGetMeQuery,
+  useForgotPasswordMutation, useResetPasswordMutation,
+  useGetWishlistQuery, useToggleWishlistMutation, useUpdateMeMutation,
+  useVerifyEmailMutation, useResendVerificationMutation,
+} = authApi;

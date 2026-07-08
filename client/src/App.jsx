@@ -16,6 +16,9 @@ import Checkout from './pages/Checkout';
 import Account from './pages/Account/Account';
 import Login from './pages/Account/Login';
 import Register from './pages/Account/Register';
+import ForgotPassword from './pages/Account/ForgotPassword';
+import ResetPassword from './pages/Account/ResetPassword';
+import VerifyEmail from './pages/Account/VerifyEmail';
 
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminProducts from './pages/admin/ProductManager';
@@ -26,6 +29,7 @@ import AdminRoles from './pages/admin/RoleManager';
 import AdminCoupons from './pages/admin/CouponManager';
 import AdminBanners from './pages/admin/BannerManager';
 import AdminGoldRate from './pages/admin/GoldRateManager';
+import AdminReviews from './pages/admin/ReviewManager';
 
 function App() {
   const dispatch = useDispatch();
@@ -48,6 +52,9 @@ function App() {
         <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
       </Route>
 
@@ -61,6 +68,7 @@ function App() {
         <Route path="coupons" element={<AdminCoupons />} />
         <Route path="banners" element={<AdminBanners />} />
         <Route path="gold-rate" element={<AdminGoldRate />} />
+        <Route path="reviews" element={<AdminReviews />} />
       </Route>
     </Routes>
   );

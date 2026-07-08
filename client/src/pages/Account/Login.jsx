@@ -46,6 +46,11 @@ const Login = () => {
           {...register('password')}
           error={errors.password?.message}
         />
+        <div className="flex justify-end">
+          <Link to="/forgot-password" className="text-xs text-text-muted hover:text-primary transition-colors">
+            Forgot password?
+          </Link>
+        </div>
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? 'Signing in...' : 'Sign In'}
         </Button>

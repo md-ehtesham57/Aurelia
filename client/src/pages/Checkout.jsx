@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetCartQuery } from '../features/cart/cartApi';
 import { useCreateOrderMutation } from '../features/orders/orderApi';
+import { useApplyCouponMutation } from '../features/admin/adminApi';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
 import Loader from '../components/common/Loader';
@@ -11,14 +12,39 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { data: cartData, isLoading } = useGetCartQuery();
   const [createOrder, { isLoading: isCreating }] = useCreateOrderMutation();
+  const [applyCoupon] = useApplyCouponMutation();
 
   const [address, setAddress] = useState({
     line1: '', line2: '', city: '', state: '', pincode: '', country: 'India',
   });
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
+  const [couponCode, setCouponCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState('');
+  const [couponError, setCouponError] = useState('');
 
-  const items = cartData?.data?.cart?.items || [];
-  const subtotal = items.reduce((sum, item) => sum + (item.product?.basePriceOverride || 0) * item.qty, 0);
+  const cart = cartData?.data?.cart;
+  const items = cart?.items || [];
+  const subtotal = cart?.subtotal || items.reduce((sum, item) => sum + ((item.computedPrice || item.product?.basePriceOverride || 0) * item.qty), 0);
+  const taxableAmount = subtotal - discount;
+  const gst = Math.round(taxableAmount * 0.03);
+  const shippingFee = taxableAmount > 500 ? 0 : 50;
+  const total = taxableAmount + gst + shippingFee;
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponError('');
+    try {
+      const result = await applyCoupon({ code: couponCode, orderValue: subtotal }).unwrap();
+      setDiscount(result.data.coupon.discount);
+      setAppliedCoupon(couponCode.toUpperCase());
+      toast.success(`Coupon applied! You save ₹${result.data.coupon.discount.toLocaleString('en-IN')}`);
+    } catch (err) {
+      setCouponError(err.data?.message || 'Invalid coupon');
+      setDiscount(0);
+      setAppliedCoupon('');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +59,7 @@ const Checkout = () => {
         items: orderItems,
         shippingAddress: address,
         paymentMethod,
+        couponCode: appliedCoupon || undefined,
       }).unwrap();
 
       toast.success('Order placed successfully!');
@@ -139,17 +166,61 @@ const Checkout = () => {
                   <span className="text-text-muted truncate mr-2">
                     {item.product?.title} x{item.qty}
                   </span>
-                  <span>₹{((item.product?.basePriceOverride || 0) * item.qty).toLocaleString('en-IN')}</span>
+                  <span>₹{((item.computedPrice || item.product?.basePriceOverride || 0) * item.qty).toLocaleString('en-IN')}</span>
                 </div>
               ))}
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Coupon code"
+                  className="flex-1 min-w-0 bg-bg border border-bg rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <Button type="button" size="sm" onClick={handleApplyCoupon} disabled={!!appliedCoupon}>
+                  {appliedCoupon ? 'Applied' : 'Apply'}
+                </Button>
+              </div>
+              {couponError && <p className="text-xs text-error">{couponError}</p>}
+              {appliedCoupon && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-green-600">{appliedCoupon}</span>
+                  <span className="text-green-600">-₹{discount.toLocaleString('en-IN')}</span>
+                </div>
+              )}
+            </div>
+
+            <hr className="border-bg" />
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-text-muted">Subtotal</span>
+                <span>₹{subtotal.toLocaleString('en-IN')}</span>
+              </div>
+              {discount > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-text-muted">Discount</span>
+                  <span className="text-green-600">-₹{discount.toLocaleString('en-IN')}</span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span className="text-text-muted">GST (3%)</span>
+                <span>₹{gst.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-muted">Shipping</span>
+                <span>{shippingFee === 0 ? 'Free' : `₹${shippingFee.toLocaleString('en-IN')}`}</span>
+              </div>
             </div>
             <hr className="border-bg" />
             <div className="flex justify-between font-medium">
               <span>Total</span>
-              <span>₹{subtotal.toLocaleString('en-IN')}</span>
+              <span>₹{total.toLocaleString('en-IN')}</span>
             </div>
             <Button type="submit" className="w-full" disabled={isCreating}>
-              {isCreating ? 'Processing...' : `Place Order`}
+              {isCreating ? 'Processing...' : `Place Order — ₹${total.toLocaleString('en-IN')}`}
             </Button>
           </div>
         </div>

@@ -2,8 +2,10 @@ import Banner from '../models/Banner.js';
 import { sendSuccess, AppError } from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
-export const getBanners = asyncHandler(async (_req, res) => {
-  const banners = await Banner.find({ isActive: true }).sort({ sortOrder: 1 });
+export const getBanners = asyncHandler(async (req, res) => {
+  const filter = {};
+  if (req.query.all !== 'true') filter.isActive = true;
+  const banners = await Banner.find(filter).sort({ sortOrder: 1 });
   sendSuccess(res, { banners });
 });
 
