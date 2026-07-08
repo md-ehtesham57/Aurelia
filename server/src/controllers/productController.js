@@ -1,6 +1,6 @@
 import Product from '../models/Product.js';
 import Category from '../models/Category.js';
-import { sendSuccess, sendError, AppError } from '../utils/apiResponse.js';
+import { sendSuccess, AppError } from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import slugify from 'slugify';
 import { calculateProductPrice, bulkCalculatePrices } from '../services/priceCalculator.js';

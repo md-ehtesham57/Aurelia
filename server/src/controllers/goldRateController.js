@@ -1,5 +1,5 @@
 import GoldRateConfig from '../models/GoldRateConfig.js';
-import { sendSuccess, AppError } from '../utils/apiResponse.js';
+import { sendSuccess } from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 export const getGoldRates = asyncHandler(async (_req, res) => {

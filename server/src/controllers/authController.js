@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from '../models/User.js';
 import Role from '../models/Role.js';
-import { sendSuccess, sendError, AppError } from '../utils/apiResponse.js';
+import { sendSuccess, AppError } from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { sendPasswordReset, sendWelcomeEmail, sendVerificationEmail } from '../services/emailService.js';
 
