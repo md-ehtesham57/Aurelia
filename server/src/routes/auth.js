@@ -10,8 +10,8 @@ router.post('/register', authLimiter, validateRequest(registerSchema), register)
 router.post('/login', authLimiter, validateRequest(loginSchema), login);
 router.post('/refresh-token', refreshToken);
 router.post('/logout', logout);
-router.post('/forgot-password', validateRequest(forgotPasswordSchema), forgotPassword);
-router.post('/reset-password', validateRequest(resetPasswordSchema), resetPassword);
+router.post('/forgot-password', authLimiter, validateRequest(forgotPasswordSchema), forgotPassword);
+router.post('/reset-password', authLimiter, validateRequest(resetPasswordSchema), resetPassword);
 router.post('/verify-email', validateRequest(verifyEmailSchema), verifyEmail);
 router.post('/resend-verification', validateRequest(resendVerificationSchema), resendVerification);
 
