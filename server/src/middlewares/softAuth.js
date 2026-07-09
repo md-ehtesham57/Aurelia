@@ -12,7 +12,9 @@ const softAuth = async (req, _res, next) => {
         req.user = user;
       }
     }
-  } catch {} // silently continue as guest
+  } catch {
+    // silently continue as guest
+  }
   next();
 };
 
