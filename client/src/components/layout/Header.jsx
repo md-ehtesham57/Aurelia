@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Search, Heart, ShoppingBag, User, Menu, X } from 'lucide-react';
+import { useGetWishlistQuery } from '../../features/auth/authApi';
+import { useGetCartQuery } from '../../features/cart/cartApi';
 import MegaMenu from './MegaMenu';
 
 const Header = () => {
@@ -11,6 +13,9 @@ const Header = () => {
   const searchRef = useRef(null);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { itemCount } = useSelector((state) => state.cart);
+  useGetCartQuery();
+  const { data: wishlistData } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
+  const wishlistCount = wishlistData?.data?.wishlist?.length || 0;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -91,8 +96,13 @@ const Header = () => {
                 </form>
               )}
             </div>
-            <Link to={isAuthenticated ? '/account?tab=wishlist' : '/login'} className="p-2 hover:bg-bg rounded transition-colors">
-              <Heart size={18} className="text-text-muted" />
+            <Link to={isAuthenticated ? '/account?tab=wishlist' : '/login'} className="p-2 hover:bg-bg rounded transition-colors relative">
+              <Heart size={18} className={`${wishlistCount > 0 ? 'fill-primary text-primary' : 'text-text-muted'}`} />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-primary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
             <button
               onClick={() => navigate('/cart')}

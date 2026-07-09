@@ -7,7 +7,7 @@ import { bulkCalculatePrices } from '../services/priceCalculator.js';
 
 const MAX_CART_QTY = 99;
 
-const getCart = async (userId, sessionId) => {
+const getCart = (userId, sessionId) => {
   if (userId) {
     return Cart.findOne({ user: userId });
   }
