@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Upload, X } from 'lucide-react';
 import { useUploadImageMutation } from '../../features/admin/adminApi';
+import ImageCropper from './ImageCropper';
 import toast from 'react-hot-toast';
 
 const ImageUploader = ({ images = [], onChange, maxImages = 5 }) => {
   const [uploading, setUploading] = useState(false);
+  const [cropFile, setCropFile] = useState(null);
+  const inputRef = useRef(null);
   const [uploadImage] = useUploadImageMutation();
 
-  const handleUpload = async (e) => {
+  const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -16,10 +19,16 @@ const ImageUploader = ({ images = [], onChange, maxImages = 5 }) => {
       return;
     }
 
+    setCropFile(file);
+    if (inputRef.current) inputRef.current.value = '';
+  };
+
+  const uploadCropped = async (croppedFile) => {
+    setCropFile(null);
     setUploading(true);
     try {
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('image', croppedFile);
 
       const result = await uploadImage(formData).unwrap();
       onChange([
@@ -69,11 +78,19 @@ const ImageUploader = ({ images = [], onChange, maxImages = 5 }) => {
                 <span className="text-[10px] text-text-muted mt-1">Upload</span>
               </>
             )}
-            <input type="file" accept="image/*" onChange={handleUpload} className="hidden" disabled={uploading} />
+            <input ref={inputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" disabled={uploading} />
           </label>
         )}
       </div>
       <p className="text-xs text-text-muted">First image = cover. Max {maxImages} images.</p>
+
+      {cropFile && (
+        <ImageCropper
+          file={cropFile}
+          onCrop={uploadCropped}
+          onCancel={() => setCropFile(null)}
+        />
+      )}
     </div>
   );
 };
