@@ -70,14 +70,14 @@ const Checkout = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="font-serif text-3xl mb-8">Checkout</h1>
+    <div className="max-w-4xl mx-auto px-fluid-4 py-fluid-8">
+      <h1 className="font-serif text-2xl sm:text-3xl mb-fluid-6 sm:mb-fluid-8">Checkout</h1>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        <div className="lg:col-span-3 space-y-6">
-          <div className="bg-surface rounded p-6">
-            <h3 className="font-serif text-lg mb-4">Shipping Address</h3>
-            <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-5 gap-fluid-8">
+        <div className="lg:col-span-3 space-y-fluid-6">
+          <div className="bg-surface rounded p-fluid-4 sm:p-fluid-6">
+            <h3 className="font-serif text-lg mb-fluid-4">Shipping Address</h3>
+            <div className="space-y-fluid-4">
               <Input
                 label="Address Line 1"
                 value={address.line1}
@@ -89,7 +89,7 @@ const Checkout = () => {
                 value={address.line2}
                 onChange={(e) => setAddress({ ...address, line2: e.target.value })}
               />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-fluid-4">
                 <Input
                   label="City"
                   value={address.city}
@@ -103,7 +103,7 @@ const Checkout = () => {
                   required
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-fluid-4">
                 <Input
                   label="Pincode"
                   value={address.pincode}
@@ -115,9 +115,9 @@ const Checkout = () => {
             </div>
           </div>
 
-          <div className="bg-surface rounded p-6">
-            <h3 className="font-serif text-lg mb-4">Payment Method</h3>
-            <div className="space-y-3">
+          <div className="bg-surface rounded p-fluid-4 sm:p-fluid-6">
+            <h3 className="font-serif text-lg mb-fluid-4">Payment Method</h3>
+            <div className="space-y-fluid-3">
               <label className="flex items-center gap-3 p-3 border border-bg rounded cursor-pointer hover:bg-bg transition-colors">
                 <input
                   type="radio"
@@ -151,9 +151,9 @@ const Checkout = () => {
         </div>
 
         <div className="lg:col-span-2">
-          <div className="bg-surface rounded p-6 sticky top-24 space-y-4">
+          <div className="bg-surface rounded p-fluid-4 sm:p-fluid-6 lg:sticky lg:top-24 space-y-fluid-4">
             <h3 className="font-serif text-lg">Order Summary</h3>
-            <div className="space-y-3">
+            <div className="space-y-fluid-3">
               {items.map((item) => (
                 <div key={item._id} className="flex justify-between text-sm">
                   <span className="text-text-muted truncate mr-2">
@@ -212,7 +212,7 @@ const Checkout = () => {
               <span>Total</span>
               <span>₹{total.toLocaleString('en-IN')}</span>
             </div>
-            <Button type="submit" className="w-full" disabled={isCreating}>
+            <Button type="submit" className="w-full text-sm sm:text-base" disabled={isCreating}>
               {isCreating ? 'Processing...' : `Place Order — ₹${total.toLocaleString('en-IN')}`}
             </Button>
           </div>

@@ -42,15 +42,14 @@ const ProductCard = ({ product }) => {
           />
           <button
             onClick={handleWishlist}
-            className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+            className="absolute top-2 sm:top-3 right-2 sm:right-3 p-2.5 bg-white/80 rounded-full hover:bg-white transition-colors flex items-center justify-center"
           >
-            <Heart size={14} className={`sm:hidden ${isWishlisted ? 'fill-primary text-primary' : 'text-text-muted hover:text-primary'}`} />
-            <Heart size={18} className={`hidden sm:block ${isWishlisted ? 'fill-primary text-primary' : 'text-text-muted hover:text-primary'}`} />
+            <Heart size={16} className={`${isWishlisted ? 'fill-primary text-primary' : 'text-text-muted hover:text-primary'}`} />
           </button>
           {isNewArrival && <Badge variant="accent" className="absolute top-2 sm:top-3 left-2 sm:left-3 text-[10px] sm:text-xs">New</Badge>}
           {isBestSeller && <Badge variant="primary" className="absolute top-2 sm:top-3 left-2 sm:left-3 text-[10px] sm:text-xs">Best Seller</Badge>}
         </div>
-        <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between gap-1">
+        <div className="p-fluid-3 sm:p-fluid-4 flex-1 flex flex-col justify-between gap-1">
           <div className="space-y-1">
             <h3 className="font-serif text-sm sm:text-lg font-medium text-text group-hover:text-primary transition-colors line-clamp-2">
               {title}

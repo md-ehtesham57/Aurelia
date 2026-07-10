@@ -7,6 +7,20 @@ const imageSchema = z.object({
   order: z.number().optional(),
 });
 
+const gemstoneSchema = z.object({
+  type: z.string(),
+  caratWeight: z.number().positive().optional(),
+  clarity: z.string().optional(),
+  color: z.string().optional(),
+});
+
+const diamondDetailsSchema = z.object({
+  caratWeight: z.number().positive().optional(),
+  clarity: z.string().optional(),
+  color: z.string().optional(),
+  certification: z.enum(['GIA', 'IGI', 'None']).optional(),
+});
+
 export const createProductSchema = z.object({
   title: z.string().min(2).max(200),
   sku: z.string().min(1).max(50),
@@ -23,6 +37,9 @@ export const createProductSchema = z.object({
   weightGrams: z.number().positive().optional(),
   makingChargeType: z.enum(['flat', 'percentage']).optional(),
   makingChargeValue: z.number().optional(),
+  gemstones: z.array(gemstoneSchema).optional(),
+  diamondDetails: diamondDetailsSchema.optional(),
+  gemstoneCost: z.number().optional(),
   basePriceOverride: z.number().optional(),
   gender: z.enum(['women', 'men', 'kids', 'unisex']).optional(),
   occasion: z.array(z.string()).optional(),

@@ -12,6 +12,9 @@ const emptyForm = {
   metalType: '', metalPurity: '', metalColor: '',
   weightGrams: '', makingChargeType: 'percentage', makingChargeValue: '',
   basePriceOverride: '',
+  diamondCarat: '', diamondClarity: '', diamondColor: '', diamondCertification: '',
+  gemstones: [],
+  gemstoneCost: '',
   gender: '', occasion: '',
   isFeatured: false, isBestSeller: false, isNewArrival: false,
   status: 'draft',
@@ -45,6 +48,12 @@ const ProductForm = ({ product, onClose }) => {
         makingChargeType: product.makingChargeType || 'percentage',
         makingChargeValue: product.makingChargeValue || '',
         basePriceOverride: product.basePriceOverride || '',
+        diamondCarat: product.diamondDetails?.caratWeight || '',
+        diamondClarity: product.diamondDetails?.clarity || '',
+        diamondColor: product.diamondDetails?.color || '',
+        diamondCertification: product.diamondDetails?.certification || '',
+        gemstones: product.gemstones || [],
+        gemstoneCost: product.gemstoneCost || '',
         gender: product.gender || '',
         occasion: product.occasion?.join(', ') || '',
         isFeatured: product.isFeatured || false,
@@ -75,6 +84,17 @@ const ProductForm = ({ product, onClose }) => {
       weightGrams: form.weightGrams ? Number(form.weightGrams) : undefined,
       makingChargeType: form.makingChargeValue ? form.makingChargeType : undefined,
       makingChargeValue: form.makingChargeValue ? Number(form.makingChargeValue) : undefined,
+      diamondDetails: form.diamondCarat ? {
+        caratWeight: Number(form.diamondCarat),
+        clarity: form.diamondClarity || undefined,
+        color: form.diamondColor || undefined,
+        certification: form.diamondCertification || undefined,
+      } : undefined,
+      gemstones: form.gemstones.length ? form.gemstones.map((g) => ({
+        ...g,
+        caratWeight: g.caratWeight ? Number(g.caratWeight) : undefined,
+      })) : undefined,
+      gemstoneCost: form.gemstoneCost ? Number(form.gemstoneCost) : undefined,
       basePriceOverride: form.basePriceOverride ? Number(form.basePriceOverride) : undefined,
       gender: form.gender || undefined,
       occasion: form.occasion ? form.occasion.split(',').map((o) => o.trim()).filter(Boolean) : [],
@@ -115,6 +135,28 @@ const ProductForm = ({ product, onClose }) => {
   };
 
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+
+  const addGemstone = () => {
+    setForm((prev) => ({
+      ...prev,
+      gemstones: [...prev.gemstones, { type: 'diamond', caratWeight: '', clarity: '', color: '' }],
+    }));
+  };
+
+  const removeGemstone = (index) => {
+    setForm((prev) => ({
+      ...prev,
+      gemstones: prev.gemstones.filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateGemstone = (index, field, value) => {
+    setForm((prev) => {
+      const updated = [...prev.gemstones];
+      updated[index] = { ...updated[index], [field]: value };
+      return { ...prev, gemstones: updated };
+    });
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -200,6 +242,98 @@ const ProductForm = ({ product, onClose }) => {
             </select>
           </div>
           <Input label="Making Charge Value" type="number" value={form.makingChargeValue} onChange={(e) => update('makingChargeValue', e.target.value)} />
+        </div>
+      </div>
+
+      <div className="border-t border-bg pt-4">
+        <h4 className="text-sm font-semibold mb-3">Gemstones & Diamonds</h4>
+
+        <div className="mb-4">
+          <h5 className="text-sm font-medium mb-2">Primary Diamond</h5>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <Input label="Carat Weight" type="number" step="0.01" value={form.diamondCarat} onChange={(e) => update('diamondCarat', e.target.value)} />
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-text">Clarity</label>
+              <select value={form.diamondClarity} onChange={(e) => update('diamondClarity', e.target.value)} className="w-full px-4 py-2.5 bg-bg rounded focus:outline-none focus:ring-2 focus:ring-primary/50">
+                <option value="">None</option>
+                <option value="IF">IF</option>
+                <option value="VVS1">VVS1</option>
+                <option value="VVS2">VVS2</option>
+                <option value="VS1">VS1</option>
+                <option value="VS2">VS2</option>
+                <option value="SI1">SI1</option>
+                <option value="SI2">SI2</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-text">Color</label>
+              <select value={form.diamondColor} onChange={(e) => update('diamondColor', e.target.value)} className="w-full px-4 py-2.5 bg-bg rounded focus:outline-none focus:ring-2 focus:ring-primary/50">
+                <option value="">None</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="G">G</option>
+                <option value="H">H</option>
+                <option value="I">I</option>
+                <option value="J">J</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-text">Certification</label>
+              <select value={form.diamondCertification} onChange={(e) => update('diamondCertification', e.target.value)} className="w-full px-4 py-2.5 bg-bg rounded focus:outline-none focus:ring-2 focus:ring-primary/50">
+                <option value="">None</option>
+                <option value="GIA">GIA</option>
+                <option value="IGI">IGI</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <h5 className="text-sm font-medium">Additional Gemstones</h5>
+            <button type="button" onClick={addGemstone} className="text-xs text-primary hover:text-primary-dark transition-colors">
+              + Add Gemstone
+            </button>
+          </div>
+          {form.gemstones.length === 0 && (
+            <p className="text-xs text-text-muted">No additional gemstones added.</p>
+          )}
+          {form.gemstones.map((g, i) => (
+            <div key={i} className="flex items-end gap-2 mb-2">
+              <div className="space-y-1 flex-1">
+                <label className="block text-xs text-text-muted">Type</label>
+                <select value={g.type} onChange={(e) => updateGemstone(i, 'type', e.target.value)} className="w-full px-3 py-2 bg-bg rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                  <option value="diamond">Diamond</option>
+                  <option value="ruby">Ruby</option>
+                  <option value="emerald">Emerald</option>
+                  <option value="sapphire">Sapphire</option>
+                  <option value="amethyst">Amethyst</option>
+                  <option value="pearl">Pearl</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div className="space-y-1 flex-1">
+                <label className="block text-xs text-text-muted">Carat</label>
+                <input type="number" step="0.01" value={g.caratWeight} onChange={(e) => updateGemstone(i, 'caratWeight', e.target.value)} className="w-full px-3 py-2 bg-bg rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+              </div>
+              <div className="space-y-1 flex-1">
+                <label className="block text-xs text-text-muted">Clarity</label>
+                <input value={g.clarity} onChange={(e) => updateGemstone(i, 'clarity', e.target.value)} placeholder="e.g. VS1" className="w-full px-3 py-2 bg-bg rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+              </div>
+              <div className="space-y-1 flex-1">
+                <label className="block text-xs text-text-muted">Color</label>
+                <input value={g.color} onChange={(e) => updateGemstone(i, 'color', e.target.value)} placeholder="e.g. G" className="w-full px-3 py-2 bg-bg rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+              </div>
+              <button type="button" onClick={() => removeGemstone(i)} className="p-2 text-text-muted hover:text-error transition-colors shrink-0">
+                &times;
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="sm:w-1/2">
+          <Input label="Total Gemstone Cost (₹)" type="number" value={form.gemstoneCost} onChange={(e) => update('gemstoneCost', e.target.value)} />
         </div>
       </div>
 

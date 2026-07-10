@@ -34,6 +34,7 @@ const productSchema = new mongoose.Schema({
     color: String,
     certification: { type: String, enum: ['GIA', 'IGI', 'None'] },
   },
+  gemstoneCost: { type: Number },
   basePriceOverride: { type: Number },
   variants: [{
     size: String,

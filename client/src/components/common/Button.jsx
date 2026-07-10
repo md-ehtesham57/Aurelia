@@ -8,7 +8,7 @@ const variants = {
 const sizes = {
   sm: 'px-3 py-1.5 text-sm',
   md: 'px-5 py-2.5 text-sm',
-  lg: 'px-8 py-3 text-base',
+  lg: 'px-6 sm:px-8 py-3 text-sm sm:text-base',
 };
 
 const Button = ({ variant = 'primary', size = 'md', className = '', children, ...props }) => {

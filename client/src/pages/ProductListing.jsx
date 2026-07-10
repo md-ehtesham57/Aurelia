@@ -29,8 +29,8 @@ const ProductListing = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
+    <div className="max-w-7xl mx-auto px-fluid-4 py-fluid-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-fluid-6 sm:mb-fluid-8">
         <div>
           <h1 className="font-serif text-2xl sm:text-3xl text-text">
             {category ? `${category.charAt(0).toUpperCase() + category.slice(1)}` : 'All Jewelry'}
@@ -39,7 +39,7 @@ const ProductListing = () => {
             <p className="text-xs sm:text-sm text-text-muted mt-1">{pagination.total} pieces</p>
           )}
         </div>
-        <div className="flex items-center gap-3 sm:gap-4 mt-3 sm:mt-0">
+        <div className="flex items-center gap-fluid-3 sm:gap-fluid-4 mt-3 sm:mt-0">
           <select
             value={sort}
             onChange={(e) => handleSort(e.target.value)}
@@ -60,7 +60,7 @@ const ProductListing = () => {
         </div>
       </div>
 
-      <div className="flex gap-8">
+      <div className="flex gap-fluid-8">
         <aside className="hidden lg:block w-56 shrink-0">
           <FilterPanel filters={filters} setFilters={setFilters} />
         </aside>
@@ -68,7 +68,7 @@ const ProductListing = () => {
         {showFilters && (
           <div className="fixed inset-0 z-50 lg:hidden">
             <div className="absolute inset-0 bg-black/40" onClick={() => setShowFilters(false)} />
-            <div className="absolute left-0 top-0 bottom-0 w-72 bg-surface p-6 overflow-y-auto">
+            <div className="absolute left-0 top-0 bottom-0 w-72 bg-surface p-fluid-6 overflow-y-auto">
               <FilterPanel filters={filters} setFilters={setFilters} onClose={() => setShowFilters(false)} />
             </div>
           </div>
@@ -83,14 +83,14 @@ const ProductListing = () => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-fluid-3 sm:gap-fluid-6">
                 {products.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))}
               </div>
 
               {pagination && pagination.pages > 1 && (
-                <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-8 sm:mt-12">
+                <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-fluid-8 sm:mt-fluid-12">
                   {page > 1 && (
                     <button
                       onClick={() => {

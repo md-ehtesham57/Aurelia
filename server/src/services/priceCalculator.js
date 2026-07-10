@@ -14,6 +14,7 @@ function computePrice(product, rateConfig) {
   }
 
   const metalValue = (product.weightGrams || 0) * (rateConfig?.ratePerGram || 0);
+  const gemstoneValue = product.gemstoneCost || 0;
 
   let makingCharges = 0;
   if (product.makingChargeType === 'flat') {
@@ -22,13 +23,14 @@ function computePrice(product, rateConfig) {
     makingCharges = Math.round(metalValue * ((product.makingChargeValue || 0) / 100));
   }
 
-  const basePrice = metalValue + makingCharges;
+  const basePrice = metalValue + makingCharges + gemstoneValue;
   const gst = Math.round(basePrice * GST_RATE);
   const total = basePrice + gst;
 
   return {
     metalValue: Math.round(metalValue),
     makingCharges,
+    gemstoneValue: Math.round(gemstoneValue),
     gst,
     total,
     ratePerGram: rateConfig?.ratePerGram || null,
@@ -41,16 +43,15 @@ export const calculateProductPrice = async (product) => {
     return computePrice(product, null);
   }
 
-  const metal = product.metal?.type || 'gold';
-  const purity = product.metal?.purity || '22K';
+  let rateConfig = null;
 
-  const rateConfig = await GoldRateConfig.findOne({
-    metalType: metal,
-    purity,
-  }).sort({ effectiveDate: -1 });
-
-  if (!rateConfig) {
-    throw new Error(`No gold rate configured for ${metal} ${purity}`);
+  if (product.metal?.type) {
+    const metal = product.metal.type;
+    const purity = product.metal.purity || '22K';
+    rateConfig = await GoldRateConfig.findOne({
+      metalType: metal,
+      purity,
+    }).sort({ effectiveDate: -1 });
   }
 
   return computePrice(product, rateConfig);

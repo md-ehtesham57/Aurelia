@@ -10,8 +10,8 @@ const router = Router();
 
 router.get('/', softAuth, getCartItems);
 router.post('/items', softAuth, addToCart);
-router.patch('/items/:itemId', validateObjectId('itemId'), updateCartItem);
-router.delete('/items/:itemId', validateObjectId('itemId'), removeCartItem);
+router.patch('/items/:itemId', softAuth, validateObjectId('itemId'), updateCartItem);
+router.delete('/items/:itemId', softAuth, validateObjectId('itemId'), removeCartItem);
 router.post('/merge', authenticate, mergeCart);
 
 export default router;

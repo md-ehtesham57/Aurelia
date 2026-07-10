@@ -43,7 +43,7 @@ const Header = () => {
   );
 
   return (
-    <header className="sticky top-0 z-40 bg-surface border-b border-bg">
+    <header className="sticky top-0 z-40 bg-surface border-b border-bg overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <button
@@ -53,11 +53,11 @@ const Header = () => {
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
-          <Link to="/" className="font-serif text-2xl tracking-wider text-text">
+          <Link to="/" className="font-serif text-xl sm:text-2xl tracking-wider text-text">
             AURELIA
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-fluid-8">
             <div className="group relative">
               <button className="text-sm text-text-muted hover:text-text transition-colors cursor-default">
                 Shop
@@ -75,7 +75,7 @@ const Header = () => {
             </Link>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="relative">
               <button onClick={toggleSearch} className="p-2 hover:bg-bg rounded transition-colors">
                 <Search size={18} className="text-text-muted" />
@@ -124,7 +124,7 @@ const Header = () => {
             {hasAdminAccess && (
               <Link
                 to="/admin"
-                className="text-xs text-primary hover:text-primary-dark transition-colors"
+                className="hidden sm:inline text-xs text-primary hover:text-primary-dark transition-colors"
               >
                 Admin
               </Link>

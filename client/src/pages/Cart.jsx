@@ -34,23 +34,23 @@ const Cart = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="font-serif text-3xl mb-8">Shopping Cart</h1>
+    <div className="max-w-4xl mx-auto px-fluid-4 py-fluid-8">
+      <h1 className="font-serif text-2xl sm:text-3xl mb-fluid-6 sm:mb-fluid-8">Shopping Cart</h1>
 
       {items.length === 0 ? (
-        <div className="text-center py-20">
-          <ShoppingBag size={48} className="mx-auto text-text-muted mb-4" />
-          <p className="text-text-muted mb-6">Your cart is empty</p>
+        <div className="text-center py-fluid-20">
+          <ShoppingBag size={48} className="mx-auto text-text-muted mb-fluid-4" />
+          <p className="text-text-muted mb-fluid-6">Your cart is empty</p>
           <Link to="/products">
             <Button>Continue Shopping</Button>
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-fluid-8">
+          <div className="lg:col-span-2 space-y-fluid-4">
             {items.map((item) => (
-              <div key={item._id} className="flex flex-col xs:flex-row gap-4 bg-surface rounded p-4">
-                <div className="w-full xs:w-24 h-48 xs:h-24 bg-bg rounded overflow-hidden shrink-0">
+              <div key={item._id} className="flex flex-col xs:flex-row gap-fluid-4 bg-surface rounded p-fluid-4">
+                <div className="w-full xs:w-24 h-32 xs:h-24 bg-bg rounded overflow-hidden shrink-0">
                   <img
                     src={item.product?.images?.[0]?.url || '/placeholder.svg'}
                     alt={item.product?.title}
@@ -58,7 +58,7 @@ const Cart = () => {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <Link to={`/products/${item.product?.slug}`} className="font-serif text-lg hover:text-primary transition-colors">
+                  <Link to={`/products/${item.product?.slug}`} className="font-serif text-lg hover:text-primary transition-colors line-clamp-1">
                     {item.product?.title}
                   </Link>
                   <p className="text-sm text-text-muted mt-1">
@@ -68,26 +68,26 @@ const Cart = () => {
                     ₹{((item.computedPrice || item.product?.basePriceOverride || 0) * item.qty).toLocaleString('en-IN')}
                   </p>
                 </div>
-                <div className="flex flex-row xs:flex-col items-center xs:items-end justify-between xs:justify-start gap-3">
+                <div className="flex flex-row xs:flex-col items-center xs:items-end justify-between xs:justify-start gap-fluid-3">
                   <button
                     onClick={() => handleRemove(item._id)}
-                    className="p-1 hover:bg-bg rounded transition-colors"
+                    className="p-2.5 hover:bg-bg rounded transition-colors flex items-center justify-center"
                   >
                     <Trash2 size={16} className="text-text-muted" />
                   </button>
                   <div className="flex items-center border border-bg rounded">
                     <button
                       onClick={() => handleQtyChange(item._id, Math.max(1, item.qty - 1))}
-                      className="p-2 hover:bg-bg transition-colors"
+                      className="p-2.5 hover:bg-bg transition-colors flex items-center justify-center"
                     >
-                      <Minus size={14} />
+                      <Minus size={16} />
                     </button>
-                    <span className="px-3 text-sm">{item.qty}</span>
+                    <span className="px-3 text-sm min-w-[1.5rem] text-center">{item.qty}</span>
                     <button
                       onClick={() => handleQtyChange(item._id, item.qty + 1)}
-                      className="p-2 hover:bg-bg transition-colors"
+                      className="p-2.5 hover:bg-bg transition-colors flex items-center justify-center"
                     >
-                      <Plus size={14} />
+                      <Plus size={16} />
                     </button>
                   </div>
                 </div>
@@ -95,7 +95,7 @@ const Cart = () => {
             ))}
           </div>
 
-          <div className="bg-surface rounded p-6 h-fit space-y-4">
+          <div className="bg-surface rounded p-fluid-6 h-fit space-y-fluid-4">
             <h3 className="font-serif text-lg">Order Summary</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
