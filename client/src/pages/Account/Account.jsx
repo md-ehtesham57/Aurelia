@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useGetMyOrdersQuery } from '../../features/orders/orderApi';
 import { useGetWishlistQuery, useToggleWishlistMutation, useUpdateMeMutation } from '../../features/auth/authApi';
@@ -22,7 +22,8 @@ const statusVariant = {
 
 const Account = () => {
   const { user, logout } = useAuth();
-  const [tab, setTab] = useState('orders');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [tab, setTab] = useState(searchParams.get('tab') || 'orders');
   const { data: ordersData, isLoading } = useGetMyOrdersQuery();
   const orders = ordersData?.data?.orders || [];
 
@@ -45,7 +46,7 @@ const Account = () => {
         {['orders', 'wishlist', 'details'].map((t) => (
           <button
             key={t}
-            onClick={() => setTab(t)}
+            onClick={() => { setTab(t); setSearchParams({ tab: t }); }}
             className={`pb-3 text-sm capitalize transition-colors whitespace-nowrap shrink-0 ${
               tab === t
                 ? 'text-primary border-b-2 border-primary font-medium'
