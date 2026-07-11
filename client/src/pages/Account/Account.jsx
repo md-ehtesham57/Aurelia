@@ -8,6 +8,7 @@ import Input from '../../components/common/Input';
 import Badge from '../../components/common/Badge';
 import Loader from '../../components/common/Loader';
 import toast from 'react-hot-toast';
+import { Trash2 } from 'lucide-react';
 
 const statusVariant = {
   placed: 'primary',
@@ -223,15 +224,24 @@ const WishlistTab = () => {
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
       {items.map((product) => (
         <div key={product._id} className="bg-surface rounded overflow-hidden border border-bg/50">
-          <Link to={`/products/${product.slug}`} className="block">
-            <div className="aspect-square bg-bg overflow-hidden">
-              <img
-                src={product.images?.[0]?.url || '/placeholder.svg'}
-                alt={product.title}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-          </Link>
+          <div className="relative">
+            <Link to={`/products/${product.slug}`} className="block">
+              <div className="aspect-square bg-bg overflow-hidden">
+                <img
+                  src={product.images?.[0]?.url || '/placeholder.svg'}
+                  alt={product.title}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+            </Link>
+            <button
+              onClick={() => handleRemove(product._id)}
+              className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center bg-white/90 hover:bg-white text-text-muted hover:text-error rounded-full shadow-sm transition-colors z-10"
+              title="Remove from wishlist"
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
           <div className="p-3 space-y-1">
             <Link to={`/products/${product.slug}`} className="font-serif text-sm font-medium text-text hover:text-primary transition-colors truncate block">
               {product.title}
@@ -242,12 +252,6 @@ const WishlistTab = () => {
             <p className="text-primary font-medium text-sm">
               ₹{(product.priceBreakdown?.total || product.basePriceOverride || 0).toLocaleString('en-IN')}
             </p>
-            <button
-              onClick={() => handleRemove(product._id)}
-              className="text-xs text-error hover:text-red-700 transition-colors mt-1"
-            >
-              Remove
-            </button>
           </div>
         </div>
       ))}
