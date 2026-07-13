@@ -29,7 +29,7 @@ const Account = () => {
   const orders = ordersData?.data?.orders || [];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-fluid-4 py-fluid-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-serif text-3xl">My Account</h1>

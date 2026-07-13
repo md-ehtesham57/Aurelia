@@ -34,7 +34,7 @@ const Cart = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <div className="max-w-4xl mx-auto px-fluid-4 py-fluid-8">
+    <div className="max-w-7xl mx-auto px-fluid-4 py-fluid-8">
       <h1 className="font-serif text-2xl sm:text-3xl mb-fluid-6 sm:mb-fluid-8">Shopping Cart</h1>
 
       {items.length === 0 ? (

@@ -22,7 +22,7 @@ const HeroBanner = ({ banners }) => {
   if (!banners.length) {
     return (
       <section className="relative bg-bg py-fluid-12 sm:py-fluid-16 lg:py-fluid-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4">
+        <div className="max-w-7xl mx-auto px-fluid-4">
           <div className="max-w-2xl">
             <p className="text-primary font-medium text-xs sm:text-sm tracking-widest uppercase mb-fluid-3 sm:mb-fluid-4">Fine Jewelry Collection</p>
             <h1 className="font-serif text-3xl sm:text-5xl lg:text-7xl text-text mb-fluid-4 sm:mb-fluid-6 leading-tight">Wear the Warmth <br className="hidden xs:inline sm:hidden" />of Gold.</h1>
@@ -40,52 +40,69 @@ const HeroBanner = ({ banners }) => {
   const banner = banners[current];
 
   return (
-    <section className="relative overflow-hidden bg-bg">
-      <div className="relative min-h-[200px] sm:min-h-[350px] lg:min-h-[450px]">
-        <img
-          src={banner.image}
-          alt={banner.title}
-          className="absolute inset-0 w-full h-full object-cover"
-          loading="eager"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent sm:bg-gradient-to-r sm:from-black/60 sm:to-transparent" />
-        <div className="absolute inset-0 flex items-center">
-          <div className="max-w-7xl mx-auto px-4 w-full">
-            <div className="max-w-lg">
-              {banner.title && <h1 className="font-serif text-xl sm:text-4xl lg:text-5xl text-white mb-2 sm:mb-4 leading-tight">{banner.title}</h1>}
-              {banner.linkUrl && (
-                <Link to={banner.linkUrl}>
-                  <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black text-xs sm:text-sm">
-                    Shop Now
-                  </Button>
-                </Link>
-              )}
+    <section className="overflow-hidden bg-bg">
+      <div className="relative max-w-7xl mx-auto shadow-[0_8px_24px_-6px_rgba(43,38,32,0.1)]">
+        <div className="aspect-[4/3] sm:aspect-[21/9] min-h-[220px] max-h-[90vh] overflow-hidden">
+          <img
+            src={banner.image}
+            alt={banner.title}
+            className="absolute inset-0 w-full h-full object-cover object-center rounded"
+            loading="eager"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent rounded" />
+          <div className="absolute inset-0 flex items-center">
+            <div className="px-fluid-4 w-full">
+              <div className="max-w-lg">
+                {banner.title && (
+                  <h1 className="font-serif text-white leading-tight
+                    text-[clamp(1.25rem,5vw,3rem)] sm:text-[clamp(1.5rem,4vw,3.5rem)] lg:text-[clamp(2rem,3.5vw,4rem)]
+                    mb-fluid-2 sm:mb-fluid-4">
+                    {banner.title}
+                  </h1>
+                )}
+                {banner.linkUrl && (
+                  <Link to={banner.linkUrl}>
+                    <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black text-xs sm:text-sm">
+                      Shop Now
+                    </Button>
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
       {banners.length > 1 && (
         <>
-          <button onClick={prev} className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 p-2.5 sm:p-2 bg-black/30 hover:bg-black/50 text-white rounded-full transition-colors">
-            <ChevronLeft size={18} className="sm:size-5" />
+          <button
+            onClick={prev}
+            className="absolute left-fluid-1 sm:left-fluid-3 top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white/20 hover:bg-white/40 text-white backdrop-blur-sm rounded-full transition-all z-10"
+            aria-label="Previous banner"
+          >
+            <ChevronLeft size={16} className="sm:size-5" />
           </button>
-          <button onClick={next} className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2.5 sm:p-2 bg-black/30 hover:bg-black/50 text-white rounded-full transition-colors">
-            <ChevronRight size={18} className="sm:size-5" />
+          <button
+            onClick={next}
+            className="absolute right-fluid-1 sm:right-fluid-3 top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white/20 hover:bg-white/40 text-white backdrop-blur-sm rounded-full transition-all z-10"
+            aria-label="Next banner"
+          >
+            <ChevronRight size={16} className="sm:size-5" />
           </button>
-          <div className="absolute bottom-3 sm:bottom-4 inset-x-0 flex justify-center gap-1.5 sm:gap-2">
+          <div className="absolute bottom-fluid-2 sm:bottom-fluid-4 inset-x-0 flex justify-center gap-2 z-10">
             {banners.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrent(i)}
-                className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${i === current ? 'bg-white' : 'bg-white/40'}`}
+                className={`w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full transition-all ${i === current ? 'bg-white scale-110' : 'bg-white/40 hover:bg-white/60'}`}
+                aria-label={`Go to banner ${i + 1}`}
               />
             ))}
           </div>
         </>
       )}
-      {banner.linkUrl ? (
-        <Link to={banner.linkUrl} className="absolute inset-0" aria-label={banner.title || 'Banner'} />
-      ) : null}
+      {banner.linkUrl && (
+        <Link to={banner.linkUrl} className="absolute inset-0 z-0" aria-label={banner.title || 'Banner'} />
+      )}
+      </div>
     </section>
   );
 };
@@ -125,7 +142,7 @@ const Home = () => {
       </section>
 
       <section className="bg-accent text-white py-fluid-12 sm:py-fluid-16">
-        <div className="max-w-7xl mx-auto px-4 text-center">
+        <div className="max-w-7xl mx-auto px-fluid-4 text-center">
           <h2 className="font-serif text-2xl sm:text-3xl mb-fluid-4">Handcrafted with Care</h2>
           <p className="text-white/80 text-sm sm:text-base max-w-xl mx-auto mb-fluid-8">
             Each piece is crafted by master artisans using ethically sourced materials.
@@ -153,17 +170,20 @@ const Home = () => {
       </section>
 
       {stripBanners.map((banner) => (
-        <section key={banner._id} className="overflow-hidden bg-bg">
-          <Link to={banner.linkUrl || '#'} className="relative block min-h-[80px] sm:min-h-[120px] lg:min-h-[160px]">
-            <img src={banner.image} alt={banner.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-            {banner.title && (
-              <div className="absolute inset-0 flex items-center justify-center p-4">
-                <h2 className="font-serif text-base sm:text-2xl lg:text-3xl text-white bg-black/40 px-4 sm:px-6 py-2 sm:py-3 rounded text-center">
-                  {banner.title}
-                </h2>
-              </div>
-            )}
-          </Link>
+        <section className="px-fluid-4 py-fluid-6">
+          <div className="max-w-7xl mx-auto overflow-hidden rounded shadow-[0_4px_16px_-4px_rgba(43,38,32,0.08)]">
+            <Link to={banner.linkUrl || '#'} className="relative block aspect-[3/1] sm:aspect-[5/1] min-h-[80px] max-h-[200px]">
+              <img src={banner.image} alt={banner.title} className="absolute inset-0 w-full h-full object-cover object-center" loading="lazy" />
+              {banner.title && (
+                <div className="absolute inset-0 flex items-center justify-center p-fluid-4">
+                  <h2 className="font-serif text-white bg-black/40 px-fluid-4 py-fluid-2 rounded text-center
+                    text-[clamp(0.875rem,3vw,1.5rem)] sm:text-[clamp(1rem,2.5vw,2rem)] leading-tight">
+                    {banner.title}
+                  </h2>
+                </div>
+              )}
+            </Link>
+          </div>
         </section>
       ))}
 

@@ -70,7 +70,7 @@ const Checkout = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-fluid-4 py-fluid-8">
+    <div className="max-w-7xl mx-auto px-fluid-4 py-fluid-8">
       <h1 className="font-serif text-2xl sm:text-3xl mb-fluid-6 sm:mb-fluid-8">Checkout</h1>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-5 gap-fluid-8">
