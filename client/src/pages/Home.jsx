@@ -40,23 +40,25 @@ const HeroBanner = ({ banners }) => {
   const banner = banners[current];
 
   return (
-    <section className="overflow-hidden bg-bg">
-      <div className="relative max-w-7xl mx-auto shadow-[0_8px_24px_-6px_rgba(43,38,32,0.1)]">
-        <div className="aspect-[4/3] sm:aspect-[21/9] min-h-[220px] max-h-[90vh] overflow-hidden">
+    <section className="overflow-hidden bg-bg py-fluid-4 sm:py-fluid-6">
+      <div className="relative max-w-7xl mx-auto px-fluid-4">
+        {/* One aspect ratio, used at every breakpoint — the image scales with viewport width,
+            it never reshapes/re-crops as the screen size changes. Contained to match the same
+            max-w-7xl width as the navbar and every other section on the page. */}
+        <div className="relative aspect-[16/9] overflow-hidden rounded-xl">
           <img
             src={banner.image}
             alt={banner.title}
-            className="absolute inset-0 w-full h-full object-cover object-center rounded"
+            className="absolute inset-0 w-full h-full object-cover object-center"
             loading="eager"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent rounded" />
-          <div className="absolute inset-0 flex items-center">
-            <div className="px-fluid-4 w-full">
-              <div className="max-w-lg">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+          <div className="absolute inset-0 flex items-end">
+            <div className="px-fluid-4 pb-fluid-6 sm:pb-fluid-10 w-full">
+              {/* Single clamp() for the whole viewport range — no breakpoint jumps in type size either */}
+              <div className="max-w-[min(80%,28rem)]">
                 {banner.title && (
-                  <h1 className="font-serif text-white leading-tight
-                    text-[clamp(1.25rem,5vw,3rem)] sm:text-[clamp(1.5rem,4vw,3.5rem)] lg:text-[clamp(2rem,3.5vw,4rem)]
-                    mb-fluid-2 sm:mb-fluid-4">
+                  <h1 className="font-serif text-white leading-tight text-[clamp(1.25rem,4.5vw,3.25rem)] mb-fluid-2 sm:mb-fluid-4">
                     {banner.title}
                   </h1>
                 )}
@@ -70,38 +72,39 @@ const HeroBanner = ({ banners }) => {
               </div>
             </div>
           </div>
-        </div>
-      {banners.length > 1 && (
-        <>
-          <button
-            onClick={prev}
-            className="absolute left-fluid-1 sm:left-fluid-3 top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white/20 hover:bg-white/40 text-white backdrop-blur-sm rounded-full transition-all z-10"
-            aria-label="Previous banner"
-          >
-            <ChevronLeft size={16} className="sm:size-5" />
-          </button>
-          <button
-            onClick={next}
-            className="absolute right-fluid-1 sm:right-fluid-3 top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white/20 hover:bg-white/40 text-white backdrop-blur-sm rounded-full transition-all z-10"
-            aria-label="Next banner"
-          >
-            <ChevronRight size={16} className="sm:size-5" />
-          </button>
-          <div className="absolute bottom-fluid-2 sm:bottom-fluid-4 inset-x-0 flex justify-center gap-2 z-10">
-            {banners.map((_, i) => (
+
+          {banners.length > 1 && (
+            <>
               <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className={`w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full transition-all ${i === current ? 'bg-white scale-110' : 'bg-white/40 hover:bg-white/60'}`}
-                aria-label={`Go to banner ${i + 1}`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-      {banner.linkUrl && (
-        <Link to={banner.linkUrl} className="absolute inset-0 z-0" aria-label={banner.title || 'Banner'} />
-      )}
+                onClick={prev}
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white/20 hover:bg-white/40 text-white backdrop-blur-sm rounded-full transition-all z-10"
+                aria-label="Previous banner"
+              >
+                <ChevronLeft size={16} className="sm:size-5" />
+              </button>
+              <button
+                onClick={next}
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white/20 hover:bg-white/40 text-white backdrop-blur-sm rounded-full transition-all z-10"
+                aria-label="Next banner"
+              >
+                <ChevronRight size={16} className="sm:size-5" />
+              </button>
+              <div className="absolute bottom-2 sm:bottom-4 inset-x-0 flex justify-center gap-2 z-10">
+                {banners.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrent(i)}
+                    className={`w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full transition-all ${i === current ? 'bg-white scale-110' : 'bg-white/40 hover:bg-white/60'}`}
+                    aria-label={`Go to banner ${i + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+          {banner.linkUrl && (
+            <Link to={banner.linkUrl} className="absolute inset-0 z-0" aria-label={banner.title || 'Banner'} />
+          )}
+        </div>
       </div>
     </section>
   );
@@ -170,7 +173,7 @@ const Home = () => {
       </section>
 
       {stripBanners.map((banner) => (
-        <section className="px-fluid-4 py-fluid-6">
+        <section key={banner._id} className="px-fluid-4 py-fluid-6">
           <div className="max-w-7xl mx-auto overflow-hidden rounded shadow-[0_4px_16px_-4px_rgba(43,38,32,0.08)]">
             <Link to={banner.linkUrl || '#'} className="relative block aspect-[3/1] sm:aspect-[5/1] min-h-[80px] max-h-[200px]">
               <img src={banner.image} alt={banner.title} className="absolute inset-0 w-full h-full object-cover object-center" loading="lazy" />
