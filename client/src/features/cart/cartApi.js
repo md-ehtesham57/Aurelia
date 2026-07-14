@@ -7,7 +7,9 @@ const updateCartInSlice = async (_, { dispatch, queryFulfilled }) => {
     if (data?.data?.cart) {
       dispatch(setCart(data.data.cart));
     }
-  } catch {}
+  } catch (error) {
+    console.error("Cart sync failed:", error);
+  }
 };
 
 export const cartApi = apiSlice.injectEndpoints({
@@ -36,7 +38,7 @@ export const cartApi = apiSlice.injectEndpoints({
     updateCartItem: builder.mutation({
       query: ({ itemId, qty }) => ({
         url: `/cart/items/${itemId}`,
-        method: 'PATCH',
+        method: 'PUT', 
         body: { qty },
       }),
       invalidatesTags: ['Cart'],

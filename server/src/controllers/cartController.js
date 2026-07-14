@@ -11,7 +11,10 @@ const getCart = (userId, sessionId) => {
   if (userId) {
     return Cart.findOne({ user: userId });
   }
-  return Cart.findOne({ sessionId });
+  if (sessionId) {
+    return Cart.findOne({ sessionId })
+  }
+  return null;
 };
 
 const attachPrices = async (cart) => {
@@ -86,9 +89,11 @@ export const addToCart = asyncHandler(async (req, res) => {
     });
   }
 
-  const existingItem = cart.items.find(
-    (i) => i.product.toString() === productId && i.variantSku === (variantSku || undefined),
-  );
+  const existingItem = cart.items.find((i) => {
+    // Extract the raw hexadecimal string cleanly
+    const itemProductId = i.product?._id ? i.product._id.toString() : i.product.toString();
+    return itemProductId === productId && i.variantSku === (variantSku || undefined);
+  });
 
   if (existingItem) {
     const newQty = existingItem.qty + validQty;
